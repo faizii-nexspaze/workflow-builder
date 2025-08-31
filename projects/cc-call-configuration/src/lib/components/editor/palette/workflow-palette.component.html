@@ -1,9 +1,8 @@
-@for (item of nodes;track item) {
-  <button icon-button fExternalItem
-          [matTooltip]="item.name" matTooltipPosition="right"
-          [style.color]="item.color"
-          [fData]="item.type" [fDisabled]="item.disabled">
-    {{ item.icon }}
+@for (step of steps; track step.step_id) {
+  <button class="btn btn-outline-primary w-100 mb-2 text-start"
+          draggable="true"
+          (dragstart)="onDragStart($event, step)">
+    {{ step.step_name }}
   </button>
 }
 

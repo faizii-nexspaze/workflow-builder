@@ -1,0 +1,92 @@
+<div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" (click)="close()">
+	<div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title"><i class="fas fa-edit text-primary me-2"></i> Edit Step</h5>
+				<button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+			</div>
+			<form (ngSubmit)="submit()" #stepForm="ngForm" autocomplete="off">
+				<div class="modal-body">
+					<div class="row g-3">
+						<div class="col-md-6">
+							<div class="mb-3">
+								<label class="form-label">Step Name <span class="text-danger">*</span></label>
+								<input type="text" class="form-control" name="step_name" [(ngModel)]="step.step_name" required placeholder="Enter step name" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="mb-3">
+								<label class="form-label">Step Type <span class="text-danger">*</span></label>
+								<select class="form-select" name="step_type" [(ngModel)]="step.step_type" required>
+									<option value="">Select Type</option>
+									<option value="workflow_builder_step">Workflow Builder Step</option>
+									<option value="custom">Custom</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="mb-3">
+								<label class="form-label">Step Description</label>
+								<textarea class="form-control" name="step_description" [(ngModel)]="step.step_description" rows="2" placeholder="Enter description"></textarea>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="mb-3">
+								<label class="form-label">Category</label>
+								<select class="form-select" name="category" [(ngModel)]="step.category">
+									<option value="">Select Category</option>
+									<option value="Validation">Validation</option>
+									<option value="Transformation">Transformation</option>
+									<option value="Notification">Notification</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="mb-3">
+								<label class="form-label">Input Schema</label>
+								<div class="card card-outline card-primary">
+									<div class="card-body p-2">
+										<div class="row g-2 align-items-end">
+											<ng-container *ngFor="let field of inputSchemaFields; let i = index">
+												<div class="col-md-5 mb-2">
+													<label class="form-label">Field Name</label>
+													<input type="text" class="form-control" placeholder="Field Name" [(ngModel)]="field.name" name="field_name_{{i}}" required />
+												</div>
+												<div class="col-md-5 mb-2">
+													<label class="form-label">Type</label>
+													<select class="form-select" [(ngModel)]="field.type" name="field_type_{{i}}" required>
+														<option value="">Type</option>
+														<option value="string">String</option>
+														<option value="number">Number</option>
+														<option value="boolean">Boolean</option>
+														<option value="object">Object</option>
+														<option value="array">Array</option>
+													</select>
+												</div>
+												<div class="col-md-2 mb-2 d-flex align-items-end">
+													<button type="button" class="btn btn-danger btn-sm" (click)="removeField(i)" *ngIf="inputSchemaFields.length > 1" title="Remove Field">
+														<i class="fas fa-minus"></i>
+													</button>
+												</div>
+											</ng-container>
+										</div>
+										<div class="d-flex align-items-center mt-2">
+											<button type="button" class="btn btn-primary btn-sm me-2" (click)="addField()">
+												<i class="fas fa-plus"></i>
+											</button>
+											<span class="fw-semibold text-primary">Add Field</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer justify-content-end gap-2">
+					<button type="submit" class="btn btn-primary px-4" [disabled]="!stepForm.form.valid"><i class="fas fa-check me-1"></i> Update</button>
+					<button type="button" class="btn btn-secondary px-4" (click)="close()"><i class="fas fa-times me-1"></i> Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

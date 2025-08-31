@@ -38,7 +38,9 @@ import { Store } from '@ngxs/store';
 import { ChangeNodePositionAction, CreateNodeAction, INodeValueModel } from '@domain';
 import { EFlowActionPanelEvent } from './action-panel/e-flow-action-panel-event';
 import { A, BACKSPACE, DASH, DELETE, NUMPAD_MINUS, NUMPAD_PLUS } from '@angular/cdk/keycodes';
-import { EOperationSystem, PlatformService } from '@foblex/platform';
+import { Step } from '@step-shared';
+import { PlatformService, EOperationSystem } from '@foblex/platform';
+import { ENodeType } from '@domain';
 
 @Component({
   selector: 'workflow-editor',
@@ -57,8 +59,45 @@ import { EOperationSystem, PlatformService } from '@foblex/platform';
     '(keydown)': 'onKeyDown($event)',
     'tabindex': '-1'
   }
+
 })
 export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy {
+  // ...existing code...
+
+  // Place drag-and-drop methods after the existing constructor
+  // Handle drag-over to allow drop
+  public onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.dataTransfer!.dropEffect = 'copy';
+  }
+
+  // Handle drop event to create node from step
+  public onDrop(event: DragEvent) {
+    event.preventDefault();
+    const data = event.dataTransfer?.getData('application/json');
+    if (!data) return;
+    let step: Step;
+    try {
+      step = JSON.parse(data);
+    } catch {
+      return;
+    }
+    // Map string type to enum if needed
+    let nodeType: any = step.step_type;
+    // Import ENodeType at the top if not already
+    if (nodeType === 'workflow_builder_step') {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
+      nodeType = ENodeType.WorkflowBuilderStep;
+    }
+    const nodeData = {
+      ...step,
+      key: 'node_' + Date.now(),
+      type: nodeType,
+      position: { x: 100, y: 100 },
+    };
+    this.onCreateNode({ data: nodeData, rect: { x: 100, y: 100, width: 100, height: 60 } } as any);
+  }
 
   private subscriptions$: Subscription = new Subscription();
 
@@ -134,8 +173,11 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public onCreateNode(event: FCreateNodeEvent): void {
+    // Always pass the correct type and description
+    const type = event.data.type;
+    const description = event.data.step_description || event.data.description || '';
     this.store.dispatch(
-      new CreateNodeAction(this.viewModel!.key, event.data, event.rect)
+      new CreateNodeAction(this.viewModel!.key, type, event.data.position, description)
     ).pipe(take(1)).subscribe((x) => {
       this.hasChanges$.next();
     });

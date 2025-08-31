@@ -1,0 +1,49 @@
+<div class="m-2 py-4 px-4 h-100 w-100">
+	<div class="d-flex align-items-center justify-content-between mb-4">
+		<h3 class="fw-bold text-primary mb-0">Step List</h3>
+		<button class="btn btn-primary btn-sm d-flex align-items-center gap-2" (click)="openCreateModal()" title="Create Step">
+			<span class="fs-4 lh-1">&#43;</span>
+			<span class="d-none d-md-inline">Create</span>
+		</button>
+	</div>
+	<div class="card shadow-sm border-0 w-100 h-100">
+		<div class="card-body p-0">
+			<div class="table-responsive">
+				<table class="table table-hover table-bordered table-striped align-middle text-center mb-0 w-100">
+					<thead class="table-light">
+						<tr>
+							<th class="text-center">Step Name</th>
+							<th class="text-center">Description</th>
+							<th class="text-center">Input Schema</th>
+							<th class="text-center">Output Schema</th>
+							<th class="text-center">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let step of steps; let i = index">
+							<td class="fw-semibold align-middle">{{ step.step_name }}</td>
+							<td class="align-middle">{{ step.step_description || '-' }}</td>
+							<td class="align-middle">
+								<div class="overflow-auto" style="max-width: 320px;">
+									<pre class="bg-light border rounded-2 p-2 m-0 text-start text-break">{{ step.input_schema ? (step.input_schema | json) : '-' }}</pre>
+								</div>
+							</td>
+							<td class="align-middle">
+								<div class="overflow-auto" style="max-width: 320px;">
+									<pre class="bg-light border rounded-2 p-2 m-0 text-start text-break">{{ step.output_schema ? (step.output_schema | json) : '-' }}</pre>
+								</div>
+							</td>
+							<td class="align-middle">
+								<button class="btn btn-outline-primary btn-sm" (click)="openEditModal(step, i)" title="Edit Step">
+									<i class="fas fa-edit"></i>
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+		<app-step-create *ngIf="showCreateModal" (closed)="closeCreateModal()" (created)="addStep($event)"></app-step-create>
+		<app-step-edit *ngIf="showEditModal" [step]="editStepData" (closed)="closeEditModal()" (updated)="updateStep($event)"></app-step-edit>
+</div>

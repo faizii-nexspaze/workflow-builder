@@ -33,6 +33,12 @@ export const NODE_STATIC_MAP: IMap<INodeStaticMapItem> = {
     color: '#ff859b',
     isExpandable: false,
   },
+  [ ENodeType.WorkflowBuilderStep ]: {
+    name: 'Step',
+    icon: 'extension',
+    color: '#607d8b',
+    isExpandable: false,
+  },
 };
 interface IMap<T = string> {
   [ key: string ]: T;

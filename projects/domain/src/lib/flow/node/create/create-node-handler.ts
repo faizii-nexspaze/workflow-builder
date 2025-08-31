@@ -56,6 +56,19 @@ export class CreateNodeHandler implements IHandler<CreateNodeRequest, IFlowModel
       case ENodeType.Disconnect:
         result = this.injector.get(CreateDisconnectNodeHandler).handle(new CreateDisconnectNodeRequest(request.position));
         break;
+      case ENodeType.WorkflowBuilderStep:
+        // Create a minimal node for custom workflow builder steps
+        result = {
+          key: 'node_' + Date.now(),
+          description: request['description'] || '',
+          isExpanded: false,
+          outputs: [],
+          input: undefined,
+          position: request.position,
+          type: ENodeType.WorkflowBuilderStep,
+          value: null
+        };
+        break;
       default:
         throw new Error('Unknown node type');
     }

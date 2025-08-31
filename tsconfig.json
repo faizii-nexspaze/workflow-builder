@@ -18,6 +18,9 @@
       ],
       "@cc-call-configuration": [
         "./projects/cc-call-configuration/src/public-api"
+      ],
+      "@step-shared": [
+        "./projects/shared/src/lib/step.service.ts"
       ]
     },
     "noPropertyAccessFromIndexSignature": true,

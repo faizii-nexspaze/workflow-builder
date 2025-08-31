@@ -9,11 +9,10 @@
 main {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex: 1;
+  height: 100%;
+  min-height: 0;
+  flex: 1 1 0%;
   overflow: hidden;
-  position: relative;
 }
 
 footer {

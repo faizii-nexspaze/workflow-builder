@@ -68,10 +68,10 @@ export class FlowState {
   }
 
   @Action(CreateNodeAction)
-  public createNode(context: StateContext<IFlowState>, {flowKey, type, position}: CreateNodeAction) {
+  public createNode(context: StateContext<IFlowState>, {flowKey, type, position, description}: CreateNodeAction) {
 
     const result = this.injector.get(CreateNodeHandler).handle(
-      new CreateNodeRequest(flowKey, type, position, context.getState().flows)
+      new CreateNodeRequest(flowKey, type, position, context.getState().flows, description)
     );
     localStorage.setItem('flows', JSON.stringify([...result]));
 

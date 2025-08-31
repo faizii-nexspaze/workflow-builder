@@ -9,4 +9,5 @@ export enum ENodeType {
   ToOperator = 'to-operator',
 
   Disconnect = 'disconnect'
+  ,WorkflowBuilderStep = 'workflow_builder_step'
 }

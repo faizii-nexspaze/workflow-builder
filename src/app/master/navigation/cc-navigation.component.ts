@@ -35,10 +35,10 @@ export class CcNavigationComponent {
       icon: 'timeline',
       disabled: false,
     }, {
-      key: 'form-builder',
-      name: 'Form Builder',
+      key: 'stepmaster',
+      name: 'Step Master',
       icon: 'build',
-      disabled: true,
+      disabled: false,
     }, {
       key: 'master',
       name: 'Master',

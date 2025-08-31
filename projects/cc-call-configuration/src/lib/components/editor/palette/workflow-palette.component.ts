@@ -1,45 +1,32 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
-import {MatIcon} from '@angular/material/icon';
-import {IconButtonComponent} from '@shared-components';
-import {FFlowModule} from '@foblex/flow';
-import {MatTooltip} from '@angular/material/tooltip';
-import {ENodeType} from '@domain';
-import {IFlowViewModel, NODE_STATIC_MAP} from '../../../domain';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
+import { StepService, Step } from '@step-shared';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'workflow-palette',
   templateUrl: './workflow-palette.component.html',
   styleUrls: ['./workflow-palette.component.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    IconButtonComponent,
-    FFlowModule,
-    MatTooltip
-  ]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WorkflowPaletteComponent implements OnChanges {
+export class WorkflowPaletteComponent implements OnInit, OnDestroy {
+  steps: Step[] = [];
+  private sub: Subscription = new Subscription();
 
-  @Input({required: true})
-  public viewModel!: IFlowViewModel;
-
-  protected nodes = Object.keys(NODE_STATIC_MAP).map((key: string) => {
-    return {
-      ...NODE_STATIC_MAP[key],
-      type: key,
-      disabled: false
-    }
-  });
-
-  public ngOnChanges(): void {
-    this.limitNodes();
+  onDragStart(event: DragEvent, step: Step) {
+    event.dataTransfer?.setData('application/json', JSON.stringify(step));
+    event.dataTransfer!.effectAllowed = 'copy';
   }
 
-  private limitNodes(): void {
-    this.nodes.forEach((x) => {
-      if (x.type === ENodeType.IncomingCall) {
-        x.disabled = this.viewModel.nodes.some((y) => y.type === ENodeType.IncomingCall);
-      }
+  constructor(private stepService: StepService) {}
+
+  ngOnInit() {
+    this.sub = this.stepService.getSteps().subscribe((steps: Step[]) => {
+      this.steps = steps;
     });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

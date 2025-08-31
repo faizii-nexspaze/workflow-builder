@@ -1,6 +1,7 @@
-@import "colors";
-@import "material";
-@import "flow";
+
+@use "flow";
+@use "colors";
+@use "material";
 
 html, body {
   height: 100%;

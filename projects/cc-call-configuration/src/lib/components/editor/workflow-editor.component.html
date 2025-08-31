@@ -1,12 +1,14 @@
 @if (viewModel) {
   <workflow-action-panel (request)="onActionPanelEvent($event)"></workflow-action-panel>
-  <workflow-palette [viewModel]="viewModel"></workflow-palette>
+  <workflow-palette></workflow-palette>
 
   <f-flow fDraggable [fFlowId]="viewModel.key"
           (fLoaded)="onLoaded()"
           (fCreateConnection)="onCreateConnection($event)"
           (fReassignConnection)="onReassignConnection($event)"
-          (fCreateNode)="onCreateNode($event)">
+          (fCreateNode)="onCreateNode($event)"
+          (drop)="onDrop($event)"
+          (dragover)="onDragOver($event)">
     <f-background>
       <f-circle-pattern></f-circle-pattern>
     </f-background>
