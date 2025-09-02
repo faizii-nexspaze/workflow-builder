@@ -1,4 +1,7 @@
 <header fDragHandle>
+  @if (model.input) {
+    <div fNodeInput [fInputId]="model.input" [fInputConnectableSide]="eFConnectableSide.TOP"></div>
+  }
   <mat-icon class="node-icon">{{ model.icon }}</mat-icon>
   <div class="node-info">
     <span class="node-title">{{ model.name }}</span>

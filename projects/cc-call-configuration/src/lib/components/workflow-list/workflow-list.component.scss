@@ -1,9 +1,59 @@
+
 :host {
   display: block;
-  width: 380px;
   height: 100%;
+}
+
+.sidebar-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 380px;
   background-color: var(--gray13);
   border-right: 1px solid var(--gray12);
+  transition: width 0.2s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+
+.sidebar-container.collapsed {
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+}
+
+
+.sidebar-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  margin-right: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  z-index: 2;
+}
+
+.sidebar-hamburger.collapsed-only {
+  width: 48px;
+  min-width: 48px;
+  height: 100%;
+  background: var(--gray13);
+  border-right: 1px solid var(--gray12);
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.sidebar-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 header {

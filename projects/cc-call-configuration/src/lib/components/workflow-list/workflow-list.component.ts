@@ -8,7 +8,7 @@ import {
   take
 } from 'rxjs';
 import {CreateFlowAction, RemoveFlowAction, FlowState} from '@domain';
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe, NgIf} from '@angular/common';
 import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
@@ -28,10 +28,17 @@ const entityName = 'flow';
     RouterLink,
     RouterLinkActive,
     ReactiveFormsModule,
-    IconButtonComponent
+    IconButtonComponent,
+    MatIcon,
+    NgIf
   ]
 })
 export class WorkflowListComponent implements OnInit, OnDestroy {
+
+  public collapsed = false;
+  public toggleSidebar(): void {
+    this.collapsed = !this.collapsed;
+  }
 
   private subscriptions$: Subscription = new Subscription();
 

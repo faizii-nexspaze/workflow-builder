@@ -57,13 +57,20 @@ export class CreateNodeHandler implements IHandler<CreateNodeRequest, IFlowModel
         result = this.injector.get(CreateDisconnectNodeHandler).handle(new CreateDisconnectNodeRequest(request.position));
         break;
       case ENodeType.WorkflowBuilderStep:
-        // Create a minimal node for custom workflow builder steps
+        // Create a node for custom workflow builder steps with default input and output
+        const nodeKey = 'node_' + Date.now();
         result = {
-          key: 'node_' + Date.now(),
+          key: nodeKey,
           description: request['description'] || '',
           isExpanded: false,
-          outputs: [],
-          input: undefined,
+          outputs: [
+            {
+              key: nodeKey + '_out_1',
+              name: 'Output 1',
+              connectedTo: undefined
+            }
+          ],
+          input: nodeKey + '_in',
           position: request.position,
           type: ENodeType.WorkflowBuilderStep,
           value: null
