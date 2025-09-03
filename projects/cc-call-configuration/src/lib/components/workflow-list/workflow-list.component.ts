@@ -1,3 +1,4 @@
+// ...existing code...
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {
@@ -8,7 +9,7 @@ import {
   take
 } from 'rxjs';
 import {CreateFlowAction, RemoveFlowAction, FlowState} from '@domain';
-import {AsyncPipe, NgIf} from '@angular/common';
+import {AsyncPipe, NgIf, NgFor} from '@angular/common';
 import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
@@ -24,15 +25,16 @@ const entityName = 'flow';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AsyncPipe,
     RouterLink,
     RouterLinkActive,
     ReactiveFormsModule,
     IconButtonComponent,
     MatIcon,
-    NgIf
+  NgIf,
+  NgFor
   ]
 })
+
 export class WorkflowListComponent implements OnInit, OnDestroy {
 
   public collapsed = false;
@@ -44,19 +46,16 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
 
   public searchControl = new FormControl('');
 
-  private entities: {
+  public entities: {
     key: string;
     name: string;
   }[] = [];
 
-  public entities$: Observable<{
-    key: string;
-    name: string;
-  }[]> = this.searchControl.valueChanges.pipe(
-    startWith(''), switchMap((search) => {
-      return of(this.entities.filter(entity => entity.name.toLowerCase().includes(search?.toLowerCase() || '')));
-    })
-  )
+
+  public get filteredEntities() {
+    const search = this.searchControl.value?.toLowerCase() || '';
+    return this.entities.filter(entity => entity.name.toLowerCase().includes(search));
+  }
 
   constructor(
     private store: Store,
@@ -131,5 +130,9 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptions$.unsubscribe();
+  }
+  // For ngFor trackBy
+  public trackByKey(index: number, item: { key: string }) {
+    return item.key;
   }
 }

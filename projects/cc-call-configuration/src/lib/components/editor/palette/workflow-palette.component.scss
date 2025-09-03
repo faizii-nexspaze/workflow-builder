@@ -1,20 +1,41 @@
-:host {
+ :host {
+  width: 220px;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  background-color: var(--gray14);
-  border: 1px solid var(--gray12);
-  padding: 8px 4px;
-  border-radius: 4px;
   position: absolute;
-  left: 16px;
-  top: 16px;
-  gap: 8px;
-  z-index: 10;
+  left: 0;
+  top: 0;
+  z-index: 999;
+  box-shadow: 2px 0 12px 0 rgba(0,0,0,0.10), 4px 0 8px -2px rgba(0,0,0,0.08);
 }
+
+.category-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 6px 0 6px 8px;
+  background: var(--gray14);
+  border-radius: 4px;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  user-select: none;
+  transition: background 0.2s;
+}
+.category-header:hover {
+  background: var(--gray13);
+}
+.category-header mat-icon {
+  margin-right: 8px;
+}
+.category-steps {
+  margin-left: 16px;
+  margin-bottom: 8px;
+}
+/* Remove duplicate :host, keep only the full-height sidebar styles above */
 
 button {
   border: 1px solid var(--gray12);

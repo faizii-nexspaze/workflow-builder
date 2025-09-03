@@ -8,16 +8,23 @@
       <button icon-button (click)="onCreate()">add</button>
     </header>
     <div class="list">
-      @for (item of entities$ | async;track item.key) {
+      <ng-container *ngFor="let item of filteredEntities; trackBy: trackByKey">
         <div class="explorer-panel-item" [routerLink]="item.key" routerLinkActive="active">
           <span>{{ item.name }}</span>
           <div class="flex-space"></div>
           <button icon-button (click)="onDelete(item, $event)">delete</button>
         </div>
-      }
+      </ng-container>
     </div>
   </div>
-  <div class="sidebar-hamburger collapsed-only" *ngIf="collapsed" (click)="toggleSidebar()">
-    <mat-icon>menu</mat-icon>
+  <div class="collapsed-top" *ngIf="collapsed">
+    <div class="sidebar-hamburger collapsed-only" (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </div>
+    <div class="collapsed-list">
+      <ng-container *ngFor="let item of filteredEntities; let idx = index; trackBy: trackByKey">
+        <button class="collapsed-workflow-icon" [routerLink]="item.key" routerLinkActive="active">W{{ idx + 1 }}</button>
+      </ng-container>
+    </div>
   </div>
 </div>

@@ -1,8 +1,18 @@
-@for (step of steps; track step.step_id) {
-  <button class="btn btn-outline-primary w-100 mb-2 text-start"
-          draggable="true"
-          (dragstart)="onDragStart($event, step)">
-    {{ step.step_name }}
-  </button>
-}
+<ng-container *ngIf="steps && steps.length">
+  <ng-container *ngFor="let category of categories">
+    <div class="category-header" (click)="expandedCategories[category] = !expandedCategories[category]">
+      <mat-icon>{{ expandedCategories[category] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      <span>{{ category }}</span>
+    </div>
+    <div class="category-steps" *ngIf="expandedCategories[category]">
+      <ng-container *ngFor="let step of stepsByCategory(category)">
+        <button class="btn btn-outline-primary w-100 mb-2 text-start"
+                draggable="true"
+                (dragstart)="onDragStart($event, step)">
+          {{ step.step_name }}
+        </button>
+      </ng-container>
+    </div>
+  </ng-container>
+</ng-container>
 
