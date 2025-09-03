@@ -26,5 +26,9 @@
         <button class="collapsed-workflow-icon" [routerLink]="item.key" routerLinkActive="active">W{{ idx + 1 }}</button>
       </ng-container>
     </div>
+    <div class="collapsed-add-btn-container">
+      <button class="collapsed-add-btn" (click)="onCreate()" aria-label="Add Workflow">+</button>
+    </div>
   </div>
+  <workflow-create [show]="showCreateModal" (closed)="onModalClosed()" (created)="onModalCreated($event)"></workflow-create>
 </div>

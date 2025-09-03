@@ -1,4 +1,7 @@
 import {Action, Selector, State, StateContext} from '@ngxs/store';
+import { LoadWorkflowsAction } from './load-workflows.action';
+import { WorkflowService } from '../../../../shared/src/lib/workflow.service';
+import { Inject } from '@angular/core';
 import {CreateFlowAction} from './create/create-flow-action';
 import {CreateFlowHandler} from './create/create-flow-handler';
 import {Injectable, Injector} from '@angular/core';
@@ -30,10 +33,14 @@ interface IFlowState {
 @State<IFlowState>({
   name: 'flows',
   defaults: {
-    flows: JSON.parse(localStorage.getItem('flows')!) || []
+    flows: []
   }
 })
 export class FlowState {
+  constructor(
+    private injector: Injector,
+    @Inject(WorkflowService) private workflowService: WorkflowService
+  ) {}
 
   @Selector()
   public static summaryList(state: IFlowState): {
@@ -48,9 +55,19 @@ export class FlowState {
     });
   }
 
-  constructor(
-    private injector: Injector
-  ) {
+
+
+  @Action(LoadWorkflowsAction)
+  public loadWorkflows(ctx: StateContext<IFlowState>) {
+    return this.workflowService.getWorkflows().subscribe((apiWorkflows: any[]) => {
+      // Map API response to IFlowModel[]
+      const flows: IFlowModel[] = apiWorkflows.map(wf => ({
+        key: wf.workflow_id,
+        name: wf.workflow_name,
+        nodes: [] // You may want to map nodes if available
+      }));
+      ctx.patchState({ flows });
+    });
   }
 
 
@@ -60,8 +77,6 @@ export class FlowState {
     const result = this.injector.get(CreateFlowHandler).handle(
       new CreateFlowRequest(key, name, context.getState().flows)
     );
-    localStorage.setItem('flows', JSON.stringify([...context.getState().flows, result]));
-
     context.patchState({
       flows: [...context.getState().flows, result]
     });
@@ -73,8 +88,6 @@ export class FlowState {
     const result = this.injector.get(CreateNodeHandler).handle(
       new CreateNodeRequest(flowKey, type, position, context.getState().flows, description)
     );
-    localStorage.setItem('flows', JSON.stringify([...result]));
-
     context.patchState({
       flows: [...result]
     });
@@ -86,8 +99,6 @@ export class FlowState {
     const result = this.injector.get(ChangeNodePositionHandler).handle(
       new ChangeNodePositionRequest(flowKey, nodeKey, position, context.getState().flows)
     );
-    localStorage.setItem('flows', JSON.stringify([...result]));
-
     context.patchState({
       flows: [...result]
     });
@@ -118,7 +129,6 @@ export class FlowState {
       new CreateConnectionRequest(flowKey, outputNodeKey, outputKey, inputKey, context.getState().flows)
     );
 
-    localStorage.setItem('flows', JSON.stringify([...result]));
     context.patchState({
       flows: [...result]
     });
@@ -131,7 +141,6 @@ export class FlowState {
       new BulkRemoveItemsRequest(flowKey, nodeKeys, outputKeys, context.getState().flows)
     );
 
-    localStorage.setItem('flows', JSON.stringify([...result]));
     context.patchState({
       flows: [...result]
     });

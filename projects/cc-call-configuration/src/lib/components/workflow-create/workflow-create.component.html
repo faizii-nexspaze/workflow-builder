@@ -1,0 +1,30 @@
+<div class="modal-backdrop" [ngStyle]="{ display: show ? 'flex' : 'none' }" (click)="close()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Workflow</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+      </div>
+  <form #workflowForm="ngForm" (ngSubmit)="submit(workflowForm)" autocomplete="off">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Workflow Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="name" [(ngModel)]="workflow.name" required placeholder="Enter workflow name" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" [(ngModel)]="workflow.description" rows="2" placeholder="Enter description"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Version <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="version" [(ngModel)]="workflow.version" required placeholder="e.g. 1.0.0" />
+          </div>
+        </div>
+        <div class="modal-footer justify-content-end gap-2">
+          <button type="submit" class="btn btn-primary px-4" [disabled]="!workflowForm.form.valid">Create</button>
+          <button type="button" class="btn btn-secondary px-4" (click)="close()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

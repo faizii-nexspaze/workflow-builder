@@ -1,5 +1,6 @@
 // ...existing code...
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import { WorkflowCreateComponent } from '../workflow-create/workflow-create.component';
 import {Store} from '@ngxs/store';
 import {
   filter,
@@ -9,6 +10,7 @@ import {
   take
 } from 'rxjs';
 import {CreateFlowAction, RemoveFlowAction, FlowState} from '@domain';
+import { LoadWorkflowsAction } from '@domain';
 import {AsyncPipe, NgIf, NgFor} from '@angular/common';
 import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
@@ -30,12 +32,15 @@ const entityName = 'flow';
     ReactiveFormsModule,
     IconButtonComponent,
     MatIcon,
-  NgIf,
-  NgFor
+    NgIf,
+    NgFor,
+    WorkflowCreateComponent
   ]
 })
 
 export class WorkflowListComponent implements OnInit, OnDestroy {
+
+  public showCreateModal = false;
 
   public collapsed = false;
   public toggleSidebar(): void {
@@ -64,20 +69,18 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.getData();
-
+    this.store.dispatch(new LoadWorkflowsAction());
+    // Subscribe to state changes so entities update when API data arrives
+    this.subscriptions$.add(
+      this.store.select(FlowState.summaryList).subscribe(entities => {
+        this.entities = [...entities].reverse();
+        this.filterEntities();
+      })
+    );
     this.subscriptions$.add(this.subscribeOnRouteChanges());
   }
 
-  private getData(): void {
-    const entities = this.store.selectSnapshot(FlowState.summaryList).reverse();
-    if (!entities || !entities.length) {
-      this.onCreate();
-    } else {
-      this.entities = entities;
-      this.filterEntities();
-    }
-  }
+  // getData is no longer needed; state subscription handles updates
 
   private filterEntities(): void {
     this.searchControl.setValue(this.searchControl.value);
@@ -103,11 +106,17 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
   }
 
   public onCreate(): void {
-    const key = generateGuid();
-    this.store.dispatch(new CreateFlowAction(key, entityName + Date.now())).pipe(take(1)).subscribe(() => {
-      this.navigateToEntity(key);
-      this.getData();
-    });
+    this.showCreateModal = true;
+  }
+
+  public onModalClosed(): void {
+    this.showCreateModal = false;
+  }
+
+  public onModalCreated(workflow: any): void {
+    // Here you will handle API integration later. For now, just close modal.
+    this.showCreateModal = false;
+    // Optionally, you can trigger a refresh or show a message.
   }
 
   public onDelete(entity: {
@@ -120,7 +129,7 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
       if (entity.key === this.router.url.split('/').pop()) {
         this.toDefaultFlow();
       }
-      this.getData();
+  // No need to call getData; state subscription will update entities
     });
   }
 
