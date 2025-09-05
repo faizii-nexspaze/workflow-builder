@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { NgIf, NgFor } from '@angular/common';
 import { StepService, Step } from '@step-shared';
@@ -33,11 +33,13 @@ export class WorkflowPaletteComponent implements OnInit, OnDestroy {
     event.dataTransfer!.effectAllowed = 'copy';
   }
 
-  constructor(private stepService: StepService) {}
+  constructor(private stepService: StepService, private cdRef: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.sub = this.stepService.getSteps().subscribe((steps: Step[]) => {
+      console.log('[WorkflowPaletteComponent] Received steps:', steps);
       this.steps = steps;
+      this.cdRef.markForCheck();
     });
   }
 

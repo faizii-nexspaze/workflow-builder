@@ -15,8 +15,8 @@ export class WorkflowService {
     return this.http.get(`${this.baseUrl}/workflow-builder/workflow`);
   }
 
-  getWorkflowById(id: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/workflow-builder/workflow/${id}`);
+  getWorkflowById(workflowId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/workflow-builder/workflow/${workflowId}/full`);
   }
 
   createWorkflow(data: any): Observable<any> {

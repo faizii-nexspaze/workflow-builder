@@ -38,7 +38,8 @@ export class CreateNodeHandler implements IHandler<CreateNodeRequest, IFlowModel
   }
 
   private getNodeModel(request: CreateNodeRequest): INodeModel {
-    let result: INodeModel | undefined;
+
+  let result: INodeModel;
 
     switch (request.type) {
       case ENodeType.IncomingCall:
@@ -57,7 +58,10 @@ export class CreateNodeHandler implements IHandler<CreateNodeRequest, IFlowModel
         result = this.injector.get(CreateDisconnectNodeHandler).handle(new CreateDisconnectNodeRequest(request.position));
         break;
       case ENodeType.WorkflowBuilderStep:
-        // Create a node for custom workflow builder steps with default input and output
+      case ENodeType.LayoutStep:
+      case ENodeType.Loading:
+      case ENodeType.Delay:
+        // Generic node for backend-driven steps
         const nodeKey = 'node_' + Date.now();
         result = {
           key: nodeKey,
@@ -72,8 +76,9 @@ export class CreateNodeHandler implements IHandler<CreateNodeRequest, IFlowModel
           ],
           input: nodeKey + '_in',
           position: request.position,
-          type: ENodeType.WorkflowBuilderStep,
-          value: null
+          type: request.type,
+          value: null,
+          icon: 'extension' // or any default icon name used in your app
         };
         break;
       default:

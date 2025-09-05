@@ -61,6 +61,8 @@ export class WorkflowNodeComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public ngOnInit(): void {
+    // Debug: log the model data passed to this node
+    console.log('[WorkflowNodeComponent] model:', this.model);
     this.form = new FormControl(this.model?.value);
     this.isBodyVisible = this.model?.isExpanded || false;
     this.subscription$ = this.subscribeToFormChanges();

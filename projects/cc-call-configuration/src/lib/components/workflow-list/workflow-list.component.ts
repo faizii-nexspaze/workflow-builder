@@ -1,5 +1,5 @@
 // ...existing code...
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, ChangeDetectorRef} from '@angular/core';
 import { WorkflowCreateComponent } from '../workflow-create/workflow-create.component';
 import {Store} from '@ngxs/store';
 import {
@@ -64,7 +64,8 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store,
-    private router: Router
+    private router: Router,
+    private cdRef: ChangeDetectorRef
   ) {
   }
 
@@ -75,6 +76,7 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
       this.store.select(FlowState.summaryList).subscribe(entities => {
         this.entities = [...entities].reverse();
         this.filterEntities();
+        this.cdRef.markForCheck();
       })
     );
     this.subscriptions$.add(this.subscribeOnRouteChanges());

@@ -14,14 +14,20 @@ export class MapToNodeViewModelHandler implements IHandler<MapToNodeViewModelReq
 
   private map(entity: INodeModel): INodeViewModel {
 
+    const staticMap = NODE_STATIC_MAP[entity.type] || {
+      icon: entity.icon || 'extension',
+      color: '#607d8b',
+      name: entity.type,
+      isExpandable: false
+    };
     const result = {
       key: entity.key,
-      icon: NODE_STATIC_MAP[ entity.type ].icon,
-      color: NODE_STATIC_MAP[ entity.type ].color,
-      name: NODE_STATIC_MAP[ entity.type ].name,
+      icon: staticMap.icon,
+      color: staticMap.color,
+      name: staticMap.name,
       description: entity.description || '',
       isExpanded: entity.isExpanded || false,
-      isExpandable: NODE_STATIC_MAP[ entity.type ].isExpandable,
+      isExpandable: staticMap.isExpandable,
       input: entity.input,
       outputs: entity.outputs.map((output) => {
         return {
