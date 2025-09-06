@@ -3,7 +3,7 @@ import { CreateConnectionAction, INodeModel } from '@domain';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { IConnectionViewModel } from '../i-connection-view-model';
-import { IFlowViewModel } from '../../i-flow-view-model';
+import { IFlowViewModel } from '../../index';
 import { generateGuid } from '@foblex/utils';
 import { IHandler } from '@foblex/mediator';
 

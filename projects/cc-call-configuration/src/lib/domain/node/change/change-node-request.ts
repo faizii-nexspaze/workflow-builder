@@ -1,4 +1,4 @@
-import { IFlowViewModel } from '../../i-flow-view-model';
+import { IFlowViewModel } from '../../index';
 import { INodeViewModel } from '../i-node-view-model';
 
 export class ChangeNodeRequest {

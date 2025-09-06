@@ -1,4 +1,4 @@
-import { IFlowViewModel } from '../i-flow-view-model';
+import { IFlowViewModel } from '../index';
 
 export class BulkRemoveRequest {
 

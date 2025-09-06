@@ -1,9 +1,10 @@
 import { MapToFlowViewModelRequest } from './map-to-flow-view-model-request';
 import { IHandler } from '@foblex/mediator';
 import { IFlowModel } from '@domain';
-import { IFlowViewModel } from '../i-flow-view-model';
+import { IFlowViewModel } from '../index';
 import { IConnectionViewModel, MapToConnectionViewModelHandler, MapToConnectionViewModelRequest } from '../connection';
 import { INodeViewModel, MapToNodeViewModelHandler, MapToNodeViewModelRequest } from '../node';
+import { INodeViewModelWithPorts } from '../index';
 
 export class MapToFlowViewModelHandler implements IHandler<MapToFlowViewModelRequest, IFlowViewModel> {
 
@@ -26,11 +27,24 @@ export class MapToFlowViewModelHandler implements IHandler<MapToFlowViewModelReq
     };
   }
 
-  private mapNodes(entity: IFlowModel): INodeViewModel[] {
-    const result = entity.nodes.map(x => new MapToNodeViewModelHandler().handle(
-      new MapToNodeViewModelRequest(x)
-    ));
-
+  private mapNodes(entity: IFlowModel): INodeViewModelWithPorts[] {
+    const result: INodeViewModelWithPorts[] = entity.nodes.map(x => {
+      const node = new MapToNodeViewModelHandler().handle(new MapToNodeViewModelRequest(x));
+      // Add output and input properties for template compatibility
+      let output = 'out';
+      if (Array.isArray(node.outputs) && node.outputs.length > 0 && node.outputs[0].key) {
+        output = node.outputs[0].key;
+      }
+      let input = 'in';
+      if (typeof node.input === 'string') {
+        input = node.input;
+      }
+      return {
+        ...node,
+        output,
+        input
+      };
+    });
     return result;
   }
 

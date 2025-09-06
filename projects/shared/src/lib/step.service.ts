@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -82,5 +81,20 @@ export class StepService {
   // update step node (e.g., position, label, etc.)
   updateStepNode(stepNodeId: string, data: any): Observable<any> {
     return this.http.patch(`${environment.apiBaseUrl}/workflow-builder/step-node/node/${stepNodeId}`, data);
+  }
+
+    // add step to workflow
+  connectStepNodes(workflowId: string, data: any): Observable<any> {
+    return this.http.post(`${environment.apiBaseUrl}/workflow-builder/step-edge/${workflowId}/edges`, data);
+  }
+
+  // update step edge (e.g., position, label, etc.)
+  updateStepEdge(stepEdgeId: string, data: any): Observable<any> {
+    return this.http.patch(`${environment.apiBaseUrl}/workflow-builder/step-edge/edge/${stepEdgeId}`, data);
+  }
+
+  // delete step node
+  deleteStepNode(stepNodeId: string): Observable<any> {
+    return this.http.delete(`${environment.apiBaseUrl}/workflow-builder/step-node/node/${stepNodeId}`);
   }
 }

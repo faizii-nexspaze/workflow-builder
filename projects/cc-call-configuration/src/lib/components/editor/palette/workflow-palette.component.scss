@@ -1,5 +1,6 @@
+// Increased width for better right margin for step names
 :host {
-  width: 220px;
+  width: 260px;
   height: 100vh;
   min-height: 100vh;
   max-height: 100vh;
@@ -40,9 +41,9 @@
 
 button {
   border: 1px solid var(--gray12);
-  width: 32px;
-  height: 32px;
-  padding: 7px;
+  margin: 8px;
+  min-height: 32px;
+  padding: 7px 16px 7px 7px; // Add right padding for text
   border-radius: 4px;
   background-color: var(--gray14);
 

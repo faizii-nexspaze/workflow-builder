@@ -3,7 +3,7 @@ import { IHandler } from '@foblex/mediator';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { IFlowModel } from '@domain';
-import { IFlowViewModel } from '../i-flow-view-model';
+import { IFlowViewModel } from '../index';
 import { MapToFlowViewModelHandler } from '../to-view-model/map-to-flow-view-model-handler';
 import { MapToFlowViewModelRequest } from '../to-view-model/map-to-flow-view-model-request';
 

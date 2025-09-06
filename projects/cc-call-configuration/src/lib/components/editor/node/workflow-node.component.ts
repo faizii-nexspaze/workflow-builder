@@ -42,7 +42,7 @@ export class WorkflowNodeComponent implements OnInit, OnChanges, OnDestroy {
   public removeConnection: EventEmitter<string> = new EventEmitter<string>();
 
   @Input({required: true})
-  public model!: INodeViewModel;
+  public model!: INodeViewModel & { output?: string };
 
   public isBodyVisible: boolean = false;
 
@@ -63,6 +63,11 @@ export class WorkflowNodeComponent implements OnInit, OnChanges, OnDestroy {
   public ngOnInit(): void {
     // Debug: log the model data passed to this node
     console.log('[WorkflowNodeComponent] model:', this.model);
+    console.log('[WorkflowNodeComponent] model.description:', this.model.description);
+    // If step_description is present as a property, log it too
+    if ((this.model as any).step_description !== undefined) {
+      console.log('[WorkflowNodeComponent] model.step_description:', (this.model as any).step_description);
+    }
     this.form = new FormControl(this.model?.value);
     this.isBodyVisible = this.model?.isExpanded || false;
     this.subscription$ = this.subscribeToFormChanges();

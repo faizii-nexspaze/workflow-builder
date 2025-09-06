@@ -1,7 +1,9 @@
 import {
   Component, OnInit
 } from '@angular/core';
+
 import { RouterOutlet } from '@angular/router';
+import { PreloaderComponent } from './preloader.component';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,7 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   imports: [
     RouterOutlet,
+    PreloaderComponent
   ]
 })
 export class AppComponent {

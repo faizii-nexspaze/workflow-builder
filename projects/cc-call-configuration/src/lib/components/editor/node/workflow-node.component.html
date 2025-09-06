@@ -1,20 +1,22 @@
+
 <header fDragHandle>
   @if (model.input) {
     <div fNodeInput [fInputId]="model.input" [fInputConnectableSide]="eFConnectableSide.TOP"></div>
   }
-  <mat-icon class="node-icon">{{ model.icon }}</mat-icon>
-  <div class="node-info">
-  <span class="node-title">{{ model.name }}</span>
-    <div class="node-description">{{ model.description }}</div>
+  <div class="node-header-row">
+    <mat-icon class="node-icon">{{ model.icon }}</mat-icon>
+    <div class="node-header-texts">
+      <span class="node-title">{{ model.name }}</span>
+      <span class="node-description">{{ model.description }}</span>
+    </div>
+    <div class="flex-space"></div>
+    @if (model.isExpandable) {
+      <button class="toggle-body-button" [class.opened]="isBodyVisible"
+              (click)="onToggleBodyClick()">
+        <mat-icon>expand_more</mat-icon>
+      </button>
+    }
   </div>
-
-  <div class="flex-space"></div>
-  @if (model.isExpandable) {
-    <button class="toggle-body-button" [class.opened]="isBodyVisible"
-            (click)="onToggleBodyClick()">
-      <mat-icon>expand_more</mat-icon>
-    </button>
-  }
 </header>
 
 @if(isBodyVisible) {
@@ -30,16 +32,19 @@
       </div>
     }
   </div>
-
 }
 
+<footer>
+  @for (output of outputs; track output.key) {
+    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="output.key" [isSelfConnectable]="false" (click)="onRemoveConnection(output.key)">
+      <mat-icon>close</mat-icon>
+    </div>
+  }
+</footer>
 @if(!isBodyVisible) {
-    <footer>
-        @for (output of outputs; track output.key) {
-          <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="output.key" [isSelfConnectable]="false" (click)="onRemoveConnection(output.key)">
-            <mat-icon>close</mat-icon>
-          </div>
-        }
-    </footer>
+  <footer style="display: flex; justify-content: center; align-items: flex-end; min-height: 24px;">
+    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="model.output ?? ''" [isSelfConnectable]="false" class="output-port">
+    </div>
+  </footer>
 }
 

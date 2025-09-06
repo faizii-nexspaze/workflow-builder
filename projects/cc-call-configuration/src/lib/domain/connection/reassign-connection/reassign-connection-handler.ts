@@ -4,7 +4,7 @@ import { CreateConnectionAction, INodeModel } from '@domain';
 import { Injectable } from '@angular/core';
 import { IConnectionViewModel } from '../i-connection-view-model';
 import { Store } from '@ngxs/store';
-import { IFlowViewModel } from '../../i-flow-view-model';
+import { IFlowViewModel } from '../../index';
 
 @Injectable({
   providedIn: 'root'
@@ -33,12 +33,17 @@ export class ReassignConnectionHandler implements IHandler<ReassignConnectionReq
   }
 
   private getOutputNode(flow: IFlowViewModel, outputKey: string): INodeModel {
-    const result = flow.nodes.find((x) => {
-      return x.outputs.some((y) => y.key === outputKey);
+    // Support both 'outputs' array and 'output' string property
+    const result = flow.nodes.find((x: any) => {
+      if (Array.isArray(x.outputs)) {
+        return x.outputs.some((y: any) => y.key === outputKey);
+      }
+      // Fallback for nodes with 'output' as string (your current structure)
+      return x.output === outputKey;
     });
 
     if (!result) {
-      throw new Error('Node not found');
+      throw new Error(`Node not found for outputKey: ${outputKey}`);
     }
 
     return result;

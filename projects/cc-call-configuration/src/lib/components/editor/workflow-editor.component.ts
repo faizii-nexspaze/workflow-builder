@@ -1,20 +1,5 @@
-// ...imports remain unchanged...
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy, ChangeDetectorRef,
-  Component, Injector, OnDestroy, OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  EFConnectableSide, EFConnectionBehavior,
-  EFConnectionType,
-  EFMarkerType,
-  FCanvasComponent,
-  FCreateConnectionEvent, FCreateNodeEvent,
-  FFlowComponent,
-  FFlowModule,
-  FReassignConnectionEvent, FZoomDirective,
-} from '@foblex/flow';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Injector, OnDestroy, OnInit, ViewChild, Inject } from '@angular/core';
+import { EFConnectableSide, EFConnectionBehavior, EFConnectionType, EFMarkerType, FCanvasComponent, FCreateConnectionEvent, FFlowComponent, FFlowModule, FReassignConnectionEvent, FZoomDirective } from '@foblex/flow';
 import { IPoint, Point } from '@foblex/2d';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
@@ -23,154 +8,47 @@ import { MatOption } from '@angular/material/autocomplete';
 import { MatSelect } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { WorkflowNodeComponent } from './node/workflow-node.component';
+import { WorkflowSidebarComponent } from './workflow-sidebar.component';
 import { WorkflowActionPanelComponent } from './action-panel/workflow-action-panel.component';
 import { WorkflowPaletteComponent } from './palette/workflow-palette.component';
-import { distinctUntilChanged, filter, map, merge, Observable, startWith, Subject, Subscription, take } from 'rxjs';
-import {
-  BulkRemoveHandler, BulkRemoveRequest, ChangeNodeHandler, ChangeNodeRequest,
-  CreateConnectionHandler, CreateConnectionRequest,
-  DetailsFlowHandler,
-  DetailsFlowRequest,
-  IFlowViewModel,
-  INodeViewModel, ReassignConnectionHandler, ReassignConnectionRequest,
-} from '../../domain';
+import { distinctUntilChanged, filter, map, merge, Observable, startWith, Subject, Subscription } from 'rxjs';
+import { BulkRemoveHandler, BulkRemoveRequest, ChangeNodeHandler, ChangeNodeRequest, IFlowViewModel, INodeViewModelWithPorts } from '../../domain';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Store, Select } from '@ngxs/store';
-import { ChangeNodePositionAction, CreateNodeAction, INodeValueModel } from '@domain';
+import { Store } from '@ngxs/store';
+import { INodeValueModel } from '@domain';
 import { EFlowActionPanelEvent } from './action-panel/e-flow-action-panel-event';
 import { A, BACKSPACE, DASH, DELETE, NUMPAD_MINUS, NUMPAD_PLUS } from '@angular/cdk/keycodes';
-import { StepService, Step } from '@step-shared';
+import { StepService } from '@step-shared';
 import { WorkflowService } from '../../../../../shared/src/lib/workflow.service';
 import { PlatformService, EOperationSystem } from '@foblex/platform';
-import { ENodeType } from '@domain';
+import { PreloaderService } from '../../../../../../src/app/preloader.service'; // Adjust path if needed
 
 @Component({
   selector: 'workflow-editor',
   templateUrl: './workflow-editor.component.html',
-  styleUrls: [ './workflow-editor.component.scss' ],
+  styleUrls: ['./workflow-editor.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FFlowModule,
+    FormsModule,
     WorkflowNodeComponent,
-    WorkflowActionPanelComponent,
-    WorkflowPaletteComponent,
-    FormsModule
-  ],
-  host: {
-    '(keydown)': 'onKeyDown($event)',
-    'tabindex': '-1'
-  }
-
+    WorkflowSidebarComponent,
+    WorkflowPaletteComponent
+  ]
 })
-export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy {
-  // ...existing code...
-
-
-  // Place drag-and-drop methods after the existing constructor
-  // Handle drag-over to allow drop
-  public onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.dataTransfer!.dropEffect = 'copy';
-  }
-
-  // Required by AfterViewInit
-  public ngAfterViewInit(): void {
-    this.onLoaded();
-  }
-
-  // Create node in the flow (used by onDrop and fCreateNode event)
-  public onCreateNode(event: FCreateNodeEvent): void {
-    const type = event.data.type;
-    const description = event.data.step_description || event.data.description || '';
-    this.store.dispatch(
-      new CreateNodeAction(this.viewModel!.key, type, event.data.position, description)
-    ).pipe(take(1)).subscribe(() => {
-      this.hasChanges$.next();
-    });
-  }
-
-  // Handle drop event to create node from step
-  public async onDrop(event: DragEvent) {
-    event.preventDefault();
-    const data = event.dataTransfer?.getData('application/json');
-    if (!data) return;
-    let step: Step;
-    try {
-      step = JSON.parse(data);
-    } catch {
-      return;
-    }
-
-    // Get workflowId from viewModel, or fallback to WorkflowService if needed
-    let workflowId: string | undefined = this.viewModel?.key;
-    if (!workflowId) {
-      try {
-        if (this.injector && this.injector.get) {
-          const workflowService = this.injector.get<any>('WorkflowService', null);
-          if (workflowService && workflowService.getCurrentWorkflowId) {
-            workflowId = workflowService.getCurrentWorkflowId();
-          }
-        }
-      } catch {}
-    }
-    if (!workflowId) {
-      console.error('[WorkflowEditorComponent] Unable to determine workflowId for step-node creation.');
-      return;
-    }
-
-    // Prepare payload for API
-    const payload = {
-      step_master_id: step.step_id,
-      step_node_label: step.step_name || '',
-      position_x: 100, // You can enhance to use actual drop position
-      position_y: 100,
-      step_node_config: {} // statically set for now
-    };
-
-    // Call backend API to create step-node
-    try {
-      const result = await this.stepService.addStepToWorkflow(workflowId, payload).toPromise();
-      // Now create the node in the UI (as before)
-      let nodeType: any = step.step_type;
-      if (!Object.values(ENodeType).includes(nodeType)) {
-        nodeType = ENodeType.WorkflowBuilderStep;
-      }
-      const nodeData = {
-        ...step,
-        key: result?.step_node_id || ('node_' + Date.now()),
-        type: nodeType,
-        position: { x: payload.position_x, y: payload.position_y },
-      };
-      this.onCreateNode({ data: nodeData, rect: { x: payload.position_x, y: payload.position_y, width: 100, height: 60 } } as any);
-    } catch (err) {
-      console.error('[WorkflowEditorComponent] Failed to create step-node via API:', err);
-    }
-  }
-
+export class WorkflowEditorComponent implements OnInit, OnDestroy {
   private subscriptions$: Subscription = new Subscription();
-
   public viewModel: IFlowViewModel | undefined;
-
-  @ViewChild(FFlowComponent, { static: false })
-  public fFlowComponent!: FFlowComponent;
-
-  @ViewChild(FCanvasComponent, { static: false })
-  public fCanvasComponent!: FCanvasComponent;
-
-  @ViewChild(FZoomDirective, { static: false })
-  public fZoomDirective!: FZoomDirective;
-
+  @ViewChild(FFlowComponent, { static: false }) public fFlowComponent!: FFlowComponent;
+  @ViewChild(FCanvasComponent, { static: false }) public fCanvasComponent!: FCanvasComponent;
+  @ViewChild(FZoomDirective, { static: false }) public fZoomDirective!: FZoomDirective;
   public eMarkerType = EFMarkerType;
-
   public eConnectableSide = EFConnectableSide;
-
   public cBehavior: EFConnectionBehavior = EFConnectionBehavior.FIXED;
-
   public cType: EFConnectionType = EFConnectionType.SEGMENT;
-
   private hasChanges$: Subject<void> = new Subject<void>();
-
+  private _reloadEventsSub: Subscription | null = null;
   private get routeKeyChange$(): Observable<boolean> {
     return this.router.events.pipe(
       startWith(new NavigationEnd(0, '', '')),
@@ -178,8 +56,6 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
       map(() => true)
     );
   }
-
-
   constructor(
     private store: Store,
     private router: Router,
@@ -188,26 +64,18 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
     private changeDetectorRef: ChangeDetectorRef,
     private fPlatform: PlatformService,
     private stepService: StepService,
-    private workflowService: WorkflowService
+    private workflowService: WorkflowService,
+    @Inject(PreloaderService) private preloader: PreloaderService
   ) {}
-
-  // Fit the canvas to screen (used by ngAfterViewInit)
-  public onLoaded(): void {
-    this.fCanvasComponent?.fitToScreen(new Point(300, 300), false);
-  }
-
-
   public flows$ = this.store.select(state => state.flows.flows);
   public loading = true;
 
   public ngOnInit(): void {
-    // Wait for flows to be loaded before initializing the editor
     this.subscriptions$.add(
       this.flows$.subscribe(flows => {
         const key = this.activatedRoute.snapshot.params['key'];
         if (flows && flows.length > 0 && flows.some((f: any) => f.key === key)) {
           this.loading = false;
-          // Only subscribe once to reload events
           if (!this._reloadEventsSub) {
             this._reloadEventsSub = this.subscribeReloadEvents();
             this.subscriptions$.add(this._reloadEventsSub);
@@ -217,85 +85,79 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
     );
   }
 
-  private _reloadEventsSub: Subscription | null = null;
-
   private subscribeReloadEvents(): Subscription {
-    return merge(this.hasChanges$, this.routeKeyChange$).subscribe((res) => {
+    return merge(this.hasChanges$, this.routeKeyChange$).subscribe(() => {
       const key = this.activatedRoute.snapshot.params['key'];
-      // Fetch workflow details from backend
+      this.preloader.show();
       this.workflowService.getWorkflowById(key).subscribe({
         next: (wf) => {
-          // Build a map of valid node keys for fast lookup
           const rawNodes = wf.nodes || [];
           const validNodeKeys = new Set<string>(rawNodes.map((n: any) => n.step_node_id));
-
-          // Normalize nodes: ensure all required properties for Foblex Flow
-          const nodes = rawNodes.map((n: any) => {
-            // Always use the type expected by your node component
+          const nodes: INodeViewModelWithPorts[] = rawNodes.map((n: any) => {
             const nodeType = 'WorkflowBuilderStep';
-            // Defensive: ensure outputs/inputs arrays exist
-            const outputs = Array.isArray(n.outputs) ? n.outputs : [];
-            const inputs = Array.isArray(n.inputs) ? n.inputs : [];
-            // Always provide step_name and description
+            const stepNodeId = n.step_node_id;
             const step_name = n.step_master?.step_name || n.step_name || 'Unnamed Step';
-            const description = n.step_master?.description || n.description || '';
-            // Provide all required properties for INodeViewModel
+            const description = n.step_master?.step_description || n.step_description || '';
             return {
-              key: n.step_node_id,
-              name: step_name, // for INodeViewModel compatibility
-              label: step_name, // for template compatibility
-              color: n.color || '#2196f3', // fallback color
-              icon: n.icon || 'category', // fallback icon
+              key: stepNodeId,
+              name: step_name,
+              color: n.color || '#2196f3',
+              icon: n.icon || 'category',
               description,
               isExpanded: n.isExpanded ?? false,
               isExpandable: n.isExpandable ?? false,
-              outputs,
-              input: n.input,
               position: { x: n.position_x, y: n.position_y },
               type: nodeType,
               value: n.value ?? null,
-              // keep all other properties for reference
-              ...n
-            };
+              ...n,
+              output: stepNodeId,
+              input: stepNodeId
+            } as INodeViewModelWithPorts;
           });
-
-          // Map and filter connections: only keep those where both from/to exist
           const rawConnections = wf.edges || [];
           const connections = rawConnections
-            .filter((e: any) => validNodeKeys.has(e.from) && validNodeKeys.has(e.to))
+            .filter((e: any) => validNodeKeys.has(e.source_node_id) && validNodeKeys.has(e.target_node_id))
             .map((e: any) => ({
-              key: e.edge_id || (e.from + '-' + e.to),
-              from: e.from,
-              to: e.to,
+              key: e.step_edge_id || (e.source_node_id + '-' + e.target_node_id),
+              from: e.source_node_id,
+              to: e.target_node_id,
               ...e
             }));
-
+          this.viewModel = undefined;
+          this.changeDetectorRef.detectChanges();
           this.viewModel = {
             key: wf.workflow_id,
             nodes,
-            connections
+            connections,
+            workflow_name: wf.workflow_name || wf.name || 'Workflow',
+            workflow_description: wf.workflow_description || wf.description || ''
           } as any;
-          // Only reset if fFlowComponent exists and nodes are present
-          if (res && this.fFlowComponent && nodes.length > 0) {
+          if (this.fFlowComponent && nodes.length > 0) {
             this.fFlowComponent.reset();
           }
           this.changeDetectorRef.detectChanges();
+          this.preloader.hide();
         },
         error: (err) => {
           console.error('[WorkflowEditorComponent] Failed to load workflow from API:', err);
           this.viewModel = undefined;
           this.changeDetectorRef.detectChanges();
+          this.preloader.hide();
         }
       });
     });
   }
 
-  public onNodePositionChanged(point: IPoint, node: INodeViewModel): void {
-    // Only update backend, then reload workflow to update state
+  // Fit the canvas to screen (used by ngAfterViewInit)
+  public onLoaded(): void {
+    this.fCanvasComponent?.fitToScreen(new Point(300, 300), false);
+  }
+
+  public onNodePositionChanged(point: IPoint, node: INodeViewModelWithPorts): void {
     this.stepService.updateStepNode(node.key, { position_x: point.x, position_y: point.y })
       .subscribe({
         next: () => {
-          this.hasChanges$.next(); // reload workflow after backend update
+          this.hasChanges$.next();
         },
         error: (err) => {
           console.error('[WorkflowEditorComponent] Failed to update step node position:', err);
@@ -304,28 +166,95 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public onCreateConnection(event: FCreateConnectionEvent): void {
-    if (!event.fInputId) {
+    if (!event.fInputId || !event.fOutputId) {
       return;
     }
-    this.viewModel = this.injector.get(CreateConnectionHandler).handle(
-      new CreateConnectionRequest(this.viewModel!, event.fOutputId, event.fInputId)
-    );
-    this.changeDetectorRef.detectChanges();
+    const sourceNode = this.viewModel?.nodes.find(node => node.output === event.fOutputId);
+    const targetNode = this.viewModel?.nodes.find(node => node.input === event.fInputId);
+
+    if (!sourceNode || !targetNode) {
+      console.error('Could not find source or target node for connection');
+      return;
+    }
+
+    const workflowId = this.viewModel?.key;
+    if (!workflowId) return;
+
+    const payload = {
+      source_node_id: sourceNode.key,
+      target_node_id: targetNode.key,
+      step_edge_label: '',
+      step_edge_config: {}
+    };
+
+    this.stepService.connectStepNodes(workflowId, payload).subscribe({
+      next: () => {
+        this.hasChanges$.next();
+      },
+      error: (err) => {
+        console.error('[WorkflowEditorComponent] Failed to create connection:', err);
+      }
+    });
   }
 
   public onReassignConnection(event: FReassignConnectionEvent): void {
-    if(!event.newTargetId) {
+    let newTargetId = event.newTargetId;
+    if (!newTargetId && event.dropPoint && this.viewModel && this.viewModel.nodes) {
+      const nodeWidth = 100;
+      const nodeHeight = 60;
+      const { x, y } = event.dropPoint;
+      const found = this.viewModel.nodes.find(node => {
+        if (!node.position) return false;
+        return (
+          x >= node.position.x &&
+          x <= node.position.x + nodeWidth &&
+          y >= node.position.y &&
+          y <= node.position.y + nodeHeight
+        );
+      });
+      if (found) {
+        newTargetId = found.key;
+      } else {
+        let minDist = Infinity;
+        let closestNode: any = null;
+        this.viewModel.nodes.forEach(node => {
+          if (!node.position) return;
+          const cx = node.position.x + nodeWidth / 2;
+          const cy = node.position.y + nodeHeight / 2;
+          const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+          if (dist < minDist) {
+            minDist = dist;
+            closestNode = node;
+          }
+        });
+        if (closestNode) {
+          newTargetId = closestNode.key;
+        }
+      }
+    }
+    if (!newTargetId) {
       return;
     }
-    this.viewModel = this.injector.get(ReassignConnectionHandler).handle(
-      new ReassignConnectionRequest(this.viewModel!, event.oldSourceId, event.oldTargetId, event.newTargetId)
+    const connection = this.viewModel?.connections.find(
+      (c) => c.from === event.oldSourceId && c.to === event.oldTargetId
     );
-    this.changeDetectorRef.detectChanges();
+    if (!connection) {
+      return;
+    }
+    const payload = { target_node_id: newTargetId };
+    this.stepService.updateStepEdge(connection.key, payload)
+      .subscribe({
+        next: () => {
+          this.hasChanges$.next();
+        },
+        error: (err) => {
+          console.error('[WorkflowEditorComponent] Failed to update step edge:', err);
+        }
+      });
   }
 
   public onRemoveConnection(outputKey: string): void {
     const connection = this.viewModel!.connections.find((x) => x.from === outputKey);
-
     this.viewModel = this.injector.get(BulkRemoveHandler).handle(
       new BulkRemoveRequest(this.viewModel!, [], [ connection!.key ])
     );
@@ -340,13 +269,12 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
     this.changeDetectorRef.detectChanges();
   }
 
-  public onValueChanged(node: INodeViewModel, value: INodeValueModel): void {
+  public onValueChanged(node: INodeViewModelWithPorts, value: INodeValueModel): void {
     const selected = this.fFlowComponent.getSelection();
     node.value = value;
     this.viewModel = this.injector.get(ChangeNodeHandler).handle(
       new ChangeNodeRequest(this.viewModel!, node)
     );
-
     this.changeDetectorRef.detectChanges();
     setTimeout(() => {
       this.fFlowComponent.select(selected.fNodeIds, selected.fConnectionIds);

@@ -1,3 +1,9 @@
+import { INodeViewModel } from './node/i-node-view-model';
+// Extend INodeViewModel to include output and input for Angular template compatibility
+export interface INodeViewModelWithPorts extends INodeViewModel<string> {
+	output: string;
+	input: string;
+}
 export * from './bulk-remove/bulk-remove-handler';
 export * from './bulk-remove/bulk-remove-request';
 

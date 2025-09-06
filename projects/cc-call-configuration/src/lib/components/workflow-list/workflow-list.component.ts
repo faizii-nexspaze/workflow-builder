@@ -42,7 +42,7 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
 
   public showCreateModal = false;
 
-  public collapsed = false;
+  public collapsed = true;
   public toggleSidebar(): void {
     this.collapsed = !this.collapsed;
   }

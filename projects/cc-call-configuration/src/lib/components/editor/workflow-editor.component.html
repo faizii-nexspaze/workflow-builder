@@ -1,60 +1,64 @@
 @if (viewModel) {
-  <workflow-action-panel (request)="onActionPanelEvent($event)"></workflow-action-panel>
-  <workflow-palette></workflow-palette>
-
-  <f-flow fDraggable [fFlowId]="viewModel.key"
-          (fLoaded)="onLoaded()"
-          (fCreateConnection)="onCreateConnection($event)"
-          (fReassignConnection)="onReassignConnection($event)"
-          (fCreateNode)="onCreateNode($event)"
-          (drop)="onDrop($event)"
-          (dragover)="onDragOver($event)">
-    <f-background>
-      <f-circle-pattern></f-circle-pattern>
-    </f-background>
-    <f-line-alignment></f-line-alignment>
-    <f-selection-area></f-selection-area>
-    <f-canvas fZoom>
-      @for (connection of viewModel.connections;track connection.key) {
-        <f-connection [fBehavior]="cBehavior"
-                      [fConnectionId]="connection.key"
-                      [fType]="cType"
-                      [fOutputId]="connection.from" [fInputId]="connection.to">
-          <svg id="normal_end" viewBox="0 0 700 700" fMarker [type]="eMarkerType.END" [height]="5" [width]="5"
-               [refX]="4" [refY]="2.5">
-            <path d="M0,0L700,350L0,700L150,350z"/>
-          </svg>
-
-          <svg id="selected_end" viewBox="0 0 700 700" fMarker [type]="eMarkerType.SELECTED_END" [height]="5"
-               [width]="5" [refX]="4" [refY]="2.5">
-            <path d="M0,0L700,350L0,700L150,350z"/>
-          </svg>
-          @if (!!connection.name) {
-            <div fConnectionCenter>
-              {{ connection.name }}
+  <div style="display: flex; flex-direction: row; height: 100%; width: 100%;">
+    <workflow-palette></workflow-palette>
+    <div style="flex: 1; position: relative;">
+      <f-flow fDraggable [fFlowId]="viewModel.key"
+              (fLoaded)="onLoaded()"
+              (fCreateConnection)="onCreateConnection($event)"
+              (fReassignConnection)="onReassignConnection($event)">
+        <f-background>
+          <f-circle-pattern></f-circle-pattern>
+        </f-background>
+        <f-line-alignment></f-line-alignment>
+        <f-selection-area></f-selection-area>
+        <f-canvas fZoom>
+          @for (connection of viewModel.connections;track connection.key) {
+            <f-connection [fBehavior]="cBehavior"
+                          [fConnectionId]="connection.key"
+                          [fType]="cType"
+                          [fOutputId]="connection.from" [fInputId]="connection.to">
+              <svg id="normal_end" viewBox="0 0 10 10" fMarker [type]="eMarkerType.END" [height]="10" [width]="10"
+                   [refX]="10" [refY]="5" markerUnits="userSpaceOnUse" orient="auto">
+                <polygon points="0,0 10,5 0,10" fill="#888" />
+              </svg>
+              <svg id="selected_end" viewBox="0 0 10 10" fMarker [type]="eMarkerType.SELECTED_END" [height]="10"
+                   [width]="10" [refX]="10" [refY]="5" markerUnits="userSpaceOnUse" orient="auto">
+                <polygon points="0,0 10,5 0,10" fill="#1976d2" />
+              </svg>
+              @if (!!connection.name) {
+                <div fConnectionCenter>
+                  {{ connection.name }}
+                </div>
+              }
+            </f-connection>
+          }
+          <f-connection-for-create [fType]="cType">
+            <svg id="normal_end" viewBox="0 0 10 10" fMarker [type]="eMarkerType.END" [height]="10" [width]="10" [refX]="10"
+                 [refY]="5" markerUnits="userSpaceOnUse" orient="auto">
+              <polygon points="0,0 10,5 0,10" fill="#888" />
+            </svg>
+          </f-connection-for-create>
+          @for (node of viewModel.nodes;track node.key) {
+            <div
+              fNode
+              [fNodeId]="node.key"
+              [fNodePosition]="node.position"
+              (fNodePositionChange)="onNodePositionChanged($event, node)">
+              <workflow-node
+                [model]="node"
+                (valueChange)="onValueChanged(node, $event)"
+                (removeConnection)="onRemoveConnection($event)">
+              </workflow-node>
             </div>
           }
-        </f-connection>
-      }
-      <f-connection-for-create [fType]="cType">
-        <svg id="normal_end" viewBox="0 0 700 700" fMarker [type]="eMarkerType.END" [height]="5" [width]="5" [refX]="4"
-             [refY]="2.5">
-          <path d="M0,0L700,350L0,700L150,350z"/>
-        </svg>
-      </f-connection-for-create>
-      @for (node of viewModel.nodes;track node.key) {
-        <workflow-node fNode
-                       [fNodeId]="node.key"
-                       [model]="node"
-                       fNodeInput [fInputId]="node.input"
-                       [fInputDisabled]="!node.input"
-                       [fInputConnectableSide]="eConnectableSide.TOP"
-                       [fNodePosition]="node.position"
-                       (valueChange)="onValueChanged(node, $event)"
-                       (removeConnection)="onRemoveConnection($event)"
-                       (fNodePositionChange)="onNodePositionChanged($event, node)">
-        </workflow-node>
-      }
-    </f-canvas>
-  </f-flow>
+        </f-canvas>
+      </f-flow>
+    </div>
+    <div style="width: 320px; height: 100%;">
+      <workflow-sidebar
+        [workflowName]="viewModel.workflow_name || ''"
+        [workflowDescription]="viewModel.workflow_description || ''">
+      </workflow-sidebar>
+    </div>
+  </div>
 }

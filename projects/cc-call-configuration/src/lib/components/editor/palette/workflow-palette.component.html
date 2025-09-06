@@ -6,7 +6,7 @@
     </div>
     <div class="category-steps" *ngIf="expandedCategories[category]">
       <ng-container *ngFor="let step of stepsByCategory(category)">
-        <button class="btn btn-outline-primary w-100 mb-2 text-start"
+        <button class="btn btn-outline-primary w-80 mb-2 text-start"
                 draggable="true"
                 (dragstart)="onDragStart($event, step)">
           {{ step.step_name }}
