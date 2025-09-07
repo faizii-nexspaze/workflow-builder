@@ -38,6 +38,36 @@ import { PreloaderService } from '../../../../../../src/app/preloader.service'; 
   ]
 })
 export class WorkflowEditorComponent implements OnInit, OnDestroy {
+  // Handle delete step-node from sidebar
+  public onDeleteStep(stepNodeId: string): void {
+    if (!stepNodeId) return;
+    this.stepService.deleteStepNode(stepNodeId).subscribe({
+      next: (response) => {
+        // Show response to user (simple alert for now)
+        alert(typeof response === 'string' ? response : 'Step node deleted successfully.');
+        // After deletion, refresh workflow and reset sidebar
+        this.selectedNode = null;
+        this.hasChanges$.next();
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        console.error('[WorkflowEditorComponent] Failed to delete step node:', err);
+        alert('Failed to delete step node.');
+      }
+    });
+  }
+  public selectedNode: INodeViewModelWithPorts | null = null;
+  // Called when a node is double-clicked
+  public onNodeClick(node: INodeViewModelWithPorts): void {
+    this.selectedNode = node;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  // Called when user clicks outside nodes (canvas area)
+  public onCanvasClick(): void {
+    this.selectedNode = null;
+    this.changeDetectorRef.markForCheck();
+  }
   private subscriptions$: Subscription = new Subscription();
   public viewModel: IFlowViewModel | undefined;
   @ViewChild(FFlowComponent, { static: false }) public fFlowComponent!: FFlowComponent;
@@ -81,6 +111,13 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
             this.subscriptions$.add(this._reloadEventsSub);
           }
         }
+      })
+    );
+    // Always reset sidebar to workflow details when workflow changes
+    this.subscriptions$.add(
+      this.routeKeyChange$.subscribe(() => {
+        this.selectedNode = null;
+        this.changeDetectorRef.markForCheck();
       })
     );
   }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'workflow-sidebar',
@@ -13,6 +13,9 @@ import { Component, Input } from '@angular/core';
           <div style="font-size: 14px; color: #555; min-height: 32px;">
             {{ workflowDescription || 'Workflow description will appear here.' }}
           </div>
+          @if (typeof stepNodeId === 'string' && stepNodeId) {
+            <button (click)="deleteStep.emit(stepNodeId!)" style="margin-top: 8px; align-self: flex-end; background: #e53935; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; font-size: 14px; cursor: pointer;">Delete</button>
+          }
         </div>
         <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 18px 16px; min-height: 180px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 15px;">
           <div style="text-align: center;">
@@ -29,4 +32,6 @@ import { Component, Input } from '@angular/core';
 export class WorkflowSidebarComponent {
   @Input() workflowName: string = '';
   @Input() workflowDescription: string = '';
+  @Input() stepNodeId: string | null = null;
+  @Output() deleteStep = new EventEmitter<string>();
 }
