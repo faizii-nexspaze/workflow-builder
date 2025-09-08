@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'header[cc-header]',
@@ -8,7 +9,9 @@ import { NgOptimizedImage } from '@angular/common';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgOptimizedImage
+    NgOptimizedImage,
+    RouterLink,
+    RouterLinkActive
   ]
 })
 export class CcHeaderComponent {

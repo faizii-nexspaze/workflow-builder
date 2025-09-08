@@ -12,6 +12,33 @@
   gap: 12px;
 }
 
+.header-nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-left: 24px;
+}
+
+.header-nav a {
+  color: var(--gray6);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header-nav a.active,
+.header-nav a:hover {
+  background: var(--gray12);
+  color: var(--primary, #1976d2);
+}
+
+.flex-space {
+  flex: 1 1 auto;
+}
+
 button {
   margin: 0;
   padding: 0;

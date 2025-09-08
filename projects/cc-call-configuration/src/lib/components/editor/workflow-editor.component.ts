@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Injector, OnDestroy, OnInit, ViewChild, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { EFConnectableSide, EFConnectionBehavior, EFConnectionType, EFMarkerType, FCanvasComponent, FCreateConnectionEvent, FFlowComponent, FFlowModule, FReassignConnectionEvent, FZoomDirective } from '@foblex/flow';
 import { IPoint, Point } from '@foblex/2d';
 import { MatIcon } from '@angular/material/icon';
@@ -30,6 +31,7 @@ import { PreloaderService } from '../../../../../../src/app/preloader.service'; 
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CommonModule,
     FFlowModule,
     FormsModule,
     WorkflowNodeComponent,
@@ -76,8 +78,7 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
   public eMarkerType = EFMarkerType;
   public eConnectableSide = EFConnectableSide;
   public cBehavior: EFConnectionBehavior = EFConnectionBehavior.FIXED;
-  // Set connection type to STRAIGHT for straight lines
-  public cType: EFConnectionType = EFConnectionType.STRAIGHT;
+  public cType: EFConnectionType = EFConnectionType.SEGMENT;
   private hasChanges$: Subject<void> = new Subject<void>();
   private _reloadEventsSub: Subscription | null = null;
   private get routeKeyChange$(): Observable<boolean> {
@@ -291,12 +292,22 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onRemoveConnection(outputKey: string): void {
-    const connection = this.viewModel!.connections.find((x) => x.from === outputKey);
-    this.viewModel = this.injector.get(BulkRemoveHandler).handle(
-      new BulkRemoveRequest(this.viewModel!, [], [ connection!.key ])
-    );
-    this.changeDetectorRef.detectChanges();
+  /**
+   * Handles edge (connection) deletion from workflow-node.
+   * Calls API to delete edge by stepedge_id, reloads workflow on success, shows error on failure.
+   * @param stepEdgeId The step edge id (connection key) to delete
+   */
+  public onRemoveConnection(stepEdgeId: string): void {
+    if (!stepEdgeId) return;
+    this.stepService.deleteStepEdgeNode(stepEdgeId).subscribe({
+      next: () => {
+        this.hasChanges$.next(); // reload workflow
+      },
+      error: (err) => {
+        console.error('[WorkflowEditorComponent] Failed to delete step edge:', err);
+        alert('Failed to delete step edge.');
+      }
+    });
   }
 
   public onRemoveItems(): void {

@@ -12,60 +12,46 @@
         }
       </div>
       <div style="flex: 1; position: relative;">
-        <f-flow fDraggable [fFlowId]="viewModel.key"
-                (fLoaded)="onLoaded()"
-                (fCreateConnection)="onCreateConnection($event)"
-                (fReassignConnection)="onReassignConnection($event)">
-          <f-background>
-            <f-circle-pattern></f-circle-pattern>
-          </f-background>
-          <f-line-alignment></f-line-alignment>
-          <f-selection-area></f-selection-area>
-          <f-canvas fZoom>
-            @for (connection of viewModel.connections;track connection.key) {
-              <f-connection [fBehavior]="cBehavior"
-                            [fConnectionId]="connection.key"
-                            [fType]="cType"
-                            [fOutputId]="connection.from" [fInputId]="connection.to">
-                <ng-container>
-                  <svg id="normal_end_{{connection.key}}" viewBox="0 0 10 10" fMarker [type]="eMarkerType.END" [height]="10" [width]="10"
-                       [refX]="10" [refY]="5" markerUnits="userSpaceOnUse" orient="auto">
-                    <polygon points="0,0 10,5 0,10" fill="#888" />
-                  </svg>
-                  <svg id="selected_end_{{connection.key}}" viewBox="0 0 10 10" fMarker [type]="eMarkerType.SELECTED_END" [height]="10"
-                       [width]="10" [refX]="10" [refY]="5" markerUnits="userSpaceOnUse" orient="auto">
-                    <polygon points="0,0 10,5 0,10" fill="#1976d2" />
-                  </svg>
-                  @if (!!connection.name) {
-                    <div fConnectionCenter>
-                      {{ connection.name }}
-                    </div>
-                  }
-                </ng-container>
-              </f-connection>
-            }
-            <f-connection-for-create [fType]="cType">
-              <svg id="normal_end" viewBox="0 0 10 10" fMarker [type]="eMarkerType.END" [height]="10" [width]="10" [refX]="10"
-                   [refY]="5" markerUnits="userSpaceOnUse" orient="auto">
-                <polygon points="0,0 10,5 0,10" fill="#888" />
-              </svg>
-            </f-connection-for-create>
-            @for (node of viewModel.nodes;track node.key) {
-              <div
-                fNode
-                [fNodeId]="node.key"
-                [fNodePosition]="node.position"
-                (fNodePositionChange)="onNodePositionChanged($event, node)"
-                (dblclick)="$event.stopPropagation(); onNodeClick(node)">
-                <workflow-node
-                  [model]="node"
-                  (valueChange)="onValueChanged(node, $event)"
-                  (removeConnection)="onRemoveConnection($event)">
-                </workflow-node>
-              </div>
-            }
-          </f-canvas>
-        </f-flow>
+        <div style="position: relative; width: 100%; height: 100%;">
+          <f-flow fDraggable [fFlowId]="viewModel.key"
+                  (fLoaded)="onLoaded()"
+                  (fCreateConnection)="onCreateConnection($event)"
+                  (fReassignConnection)="onReassignConnection($event)">
+            <f-background>
+              <f-circle-pattern></f-circle-pattern>
+            </f-background>
+            <f-line-alignment></f-line-alignment>
+            <f-selection-area></f-selection-area>
+            <f-canvas fZoom>
+              @for (connection of viewModel.connections; track connection.key) {
+                <f-connection
+                  [fBehavior]="cBehavior"
+                  [fConnectionId]="connection.key"
+                  [fOutputId]="connection.from"
+                  [fInputId]="connection.to">
+                </f-connection>
+              }
+              <f-connection-for-create [fType]="cType"></f-connection-for-create>
+              @for (node of viewModel.nodes; track node.key) {
+                <div
+                  fNode
+                  [fNodeId]="node.key"
+                  [fNodePosition]="node.position"
+                  (fNodePositionChange)="onNodePositionChanged($event, node)"
+                  (dblclick)="$event.stopPropagation(); onNodeClick(node)">
+                  <workflow-node
+                    [model]="node"
+                    [connections]="viewModel.connections"
+                    (valueChange)="onValueChanged(node, $event)"
+                    (removeConnection)="onRemoveConnection($event)">
+                  </workflow-node>
+                </div>
+              }
+            </f-canvas>
+          </f-flow>
+          <!-- Render arrowhead icons at the end of each connection using new Angular control flow -->
+          <!-- Arrowhead icons manually rendered here previously have been removed. -->
+        </div>
       </div>
     </div>
     <div style="width: 320px; height: 100%;">
@@ -73,6 +59,7 @@
         [workflowName]="selectedNode ? (selectedNode.name || '') : (viewModel.workflow_name || '')"
         [workflowDescription]="selectedNode ? (selectedNode.description || '') : (viewModel.workflow_description || '')"
         [stepNodeId]="selectedNode?.key || null"
+        [stepNode]="selectedNode"
         (deleteStep)="onDeleteStep($event)">
       </workflow-sidebar>
     </div>

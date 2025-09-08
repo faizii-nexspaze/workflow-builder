@@ -1,4 +1,3 @@
-
 <header fDragHandle>
   @if (model.input) {
     <div fNodeInput [fInputId]="model.input" [fInputConnectableSide]="eFConnectableSide.TOP"></div>
@@ -34,16 +33,13 @@
   </div>
 }
 
-<footer>
-  @for (output of outputs; track output.key) {
-    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="output.key" [isSelfConnectable]="false" (click)="onRemoveConnection(output.key)">
-      <mat-icon>close</mat-icon>
-    </div>
-  }
-</footer>
 @if(!isBodyVisible) {
   <footer style="display: flex; justify-content: center; align-items: flex-end; min-height: 24px;">
-    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="model.output ?? ''" [isSelfConnectable]="false" class="output-port">
+    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="model.output ?? ''" [isSelfConnectable]="false" class="output-port-x"
+         (click)="onBottomOutputClick()">
+      @if (hasOutgoingConnection) {
+        <span class="output-x-icon" (click)="onBottomOutputClick($event)">&#10005;</span>
+      }
     </div>
   </footer>
 }

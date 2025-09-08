@@ -11,7 +11,6 @@ import { CcHeaderComponent } from './header/cc-header.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterOutlet,
-    CcNavigationComponent,
     CcHeaderComponent
   ]
 })

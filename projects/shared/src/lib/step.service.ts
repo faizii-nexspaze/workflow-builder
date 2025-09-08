@@ -114,4 +114,9 @@ export class StepService {
   deleteStepNode(stepNodeId: string): Observable<any> {
     return this.http.delete(`${environment.apiBaseUrl}/workflow-builder/step-node/node/${stepNodeId}`);
   }
+
+  // delete step edge
+  deleteStepEdgeNode(stepEdgeId: string): Observable<any> {
+    return this.http.delete(`${environment.apiBaseUrl}/workflow-builder/step-edge/edge/${stepEdgeId}`);
+  }
 }

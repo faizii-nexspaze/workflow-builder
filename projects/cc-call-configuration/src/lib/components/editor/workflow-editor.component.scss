@@ -19,3 +19,37 @@
   right: 16px;
   z-index: 20;
 }
+
+.f-connection-x-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #1976d2;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: 2px solid #fff;
+  z-index: 10;
+}
+
+.f-connection-x-box span {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Make sure the arrowhead is visible and styled */
+svg[marker-end],
+svg[marker-end] polygon {
+  fill: #1976d2 !important;
+}
+
+/* Arrowhead marker for connection lines */
+.arrowhead-marker {
+  fill: #1976d2 !important;
+  stroke: #1976d2 !important;
+}
