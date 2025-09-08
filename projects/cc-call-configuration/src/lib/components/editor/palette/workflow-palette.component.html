@@ -6,11 +6,12 @@
     </div>
     <div class="category-steps" *ngIf="expandedCategories[category]">
       <ng-container *ngFor="let step of stepsByCategory(category)">
-        <button class="btn btn-outline-primary w-80 mb-2 text-start"
-                draggable="true"
-                (dragstart)="onDragStart($event, step)">
-          {{ step.step_name }}
-        </button>
+  <button class="btn btn-outline-primary w-80 mb-2 text-start"
+    draggable="true"
+    (dragstart)="onDragStart($event, step)">
+    <i class="fa-solid fa-wrench me-2"></i>
+    {{ step.step_name }}
+  </button>
       </ng-container>
     </div>
   </ng-container>

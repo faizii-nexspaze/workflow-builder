@@ -1,10 +1,22 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from './environment';
 
+
 export interface Step {
   step_id: string;
+  step_name: string;
+  step_description?: string;
+  input_schema?: object;
+  output_schema?: object;
+  step_type: string;
+  category?: string;
+}
+
+// For creation (no step_id)
+export interface StepCreate {
   step_name: string;
   step_description?: string;
   input_schema?: object;
@@ -55,8 +67,13 @@ export class StepService {
   }
 
 
-  addStep(step: Step) {
-    this.stepsSubject.next([step, ...this.stepsSubject.value]);
+  addStep(step: StepCreate): Observable<Step> {
+    const url = `${environment.apiBaseUrl}/workflow-builder/step`;
+    return this.http.post<Step>(url, step).pipe(
+      tap((createdStep: Step) => {
+        this.stepsSubject.next([createdStep, ...this.stepsSubject.value]);
+      })
+    );
   }
 
 

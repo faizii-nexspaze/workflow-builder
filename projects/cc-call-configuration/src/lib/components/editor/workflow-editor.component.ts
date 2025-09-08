@@ -76,7 +76,8 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
   public eMarkerType = EFMarkerType;
   public eConnectableSide = EFConnectableSide;
   public cBehavior: EFConnectionBehavior = EFConnectionBehavior.FIXED;
-  public cType: EFConnectionType = EFConnectionType.SEGMENT;
+  // Set connection type to STRAIGHT for straight lines
+  public cType: EFConnectionType = EFConnectionType.STRAIGHT;
   private hasChanges$: Subject<void> = new Subject<void>();
   private _reloadEventsSub: Subscription | null = null;
   private get routeKeyChange$(): Observable<boolean> {

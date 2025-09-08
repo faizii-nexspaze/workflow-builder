@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { StepService } from '@step-shared';
 
 @Component({
   selector: 'app-step-create',
@@ -25,6 +26,8 @@ export class StepCreateComponent {
     { name: '', type: '' }
   ];
 
+  constructor(private stepService: StepService) {}
+
   close() {
     this.closed.emit();
   }
@@ -47,8 +50,23 @@ export class StepCreateComponent {
         properties[field.name] = { type: field.type };
       }
     }
-    this.step.input_schema = { type: 'object', properties };
-    this.created.emit(this.step);
-    this.close();
+    const payload = {
+      step_name: this.step.step_name,
+      step_description: this.step.step_description,
+      input_schema: { type: 'object', properties },
+      output_schema: this.step.output_schema || {},
+      step_type: this.step.step_type,
+      category: this.step.category
+    };
+    this.stepService.addStep(payload).subscribe({
+      next: (createdStep) => {
+        this.created.emit(createdStep);
+        this.close();
+      },
+      error: (err) => {
+        // Optionally handle error (show message, etc.)
+        this.close();
+      }
+    });
   }
 }

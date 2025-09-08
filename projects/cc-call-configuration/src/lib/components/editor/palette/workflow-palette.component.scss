@@ -6,9 +6,10 @@
   max-height: 100vh;
   display: flex;
   flex-direction: column;
-  position: absolute;
+  /* Remove position: absolute and top: 0 to allow margin-top to work */
+  // margin-top: 20px;
   left: 0;
-  top: 0;
+  /* z-index below header */
   z-index: 999;
   box-shadow: 2px 0 12px 0 rgba(0,0,0,0.10), 4px 0 8px -2px rgba(0,0,0,0.08);
   background: #fff;

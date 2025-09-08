@@ -41,8 +41,16 @@ export class StepListComponent implements OnInit, OnDestroy {
     this.showCreateModal = false;
   }
   addStep(step: Step) {
-    this.stepService.addStep({ ...step, step_id: (Date.now()).toString() });
-    this.closeCreateModal();
+    // Remove step_id if present, only send StepCreate fields
+    const { step_id, ...stepData } = step;
+    this.stepService.addStep(stepData).subscribe({
+      next: () => {
+        this.closeCreateModal();
+      },
+      error: () => {
+        this.closeCreateModal();
+      }
+    });
   }
 
   openEditModal(step: Step, index: number) {
