@@ -30,7 +30,6 @@ const entityName = 'flow';
     RouterLink,
     RouterLinkActive,
     ReactiveFormsModule,
-    IconButtonComponent,
     MatIcon,
     NgIf,
     NgFor,

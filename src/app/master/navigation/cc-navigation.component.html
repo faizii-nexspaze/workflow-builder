@@ -1,9 +1,15 @@
 @for (item of menu;track item) {
-  <a [routerLink]="item.key" routerLinkActive="active" [attr.disabled]="item.disabled">
-    <mat-icon>{{item.icon}}</mat-icon>
+  <a [routerLink]="item.key"
+     routerLinkActive="active"
+     [attr.disabled]="item.disabled"
+     class="d-block rounded p-1 mb-2"
+  [attr.aria-label]="item.key"
+     [attr.tabindex]="item.disabled ? -1 : 0"
+     [attr.aria-disabled]="item.disabled">
+    <mat-icon class="text-lg" aria-hidden="true">{{item.icon}}</mat-icon>
   </a>
 }
 <div class="flex-space"></div>
-<a routerLink="settings" routerLinkActive="active" [attr.disabled]="true">
-  <mat-icon>settings</mat-icon>
+<a routerLink="settings" routerLinkActive="active" [attr.disabled]="true" class="d-block rounded p-1 mb-2" aria-label="Settings" tabindex="-1" aria-disabled="true">
+  <mat-icon class="text-lg" aria-hidden="true">settings</mat-icon>
 </a>

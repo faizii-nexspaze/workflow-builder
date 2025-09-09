@@ -15,6 +15,92 @@ body {
   background-color: var(--gray14);
 }
 
+// Typography scale
+:root {
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+  --font-xl: 22px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  --radius: 4px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+// Utility classes
+.text-xs { font-size: var(--font-xs); }
+.text-sm { font-size: var(--font-sm); }
+.text-md { font-size: var(--font-md); }
+.text-lg { font-size: var(--font-lg); }
+.text-xl { font-size: var(--font-xl); }
+.fw-normal { font-weight: var(--font-weight-normal); }
+.fw-medium { font-weight: var(--font-weight-medium); }
+.fw-bold { font-weight: var(--font-weight-bold); }
+
+.m-0 { margin: 0 !important; }
+.mt-1 { margin-top: 4px !important; }
+.mb-1 { margin-bottom: 4px !important; }
+.mt-2 { margin-top: 8px !important; }
+.mb-2 { margin-bottom: 8px !important; }
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 4px !important; }
+.p-2 { padding: 8px !important; }
+.gap-1 { gap: 4px !important; }
+.gap-2 { gap: 8px !important; }
+
+// Button utility classes
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius);
+  border: none;
+  padding: 8px 22px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+  outline: none;
+}
+.btn-primary {
+  background: var(--blue3);
+  color: #fff;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: var(--blue4);
+}
+.btn-secondary {
+  background: var(--gray8);
+  color: var(--gray2);
+}
+.btn-secondary:hover, .btn-secondary:focus {
+  background: var(--gray9);
+}
+.btn-danger {
+  background: #e53935;
+  color: #fff;
+}
+.btn-danger:hover, .btn-danger:focus {
+  background: #b71c1c;
+}
+.btn-disabled, .btn:disabled {
+  background: var(--gray11);
+  color: var(--gray6);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+// Focus ring for accessibility
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--blue5);
+}
+
+// Border radius utility
+.rounded { border-radius: var(--radius) !important; }
+
 .flex-space {
   flex: 1;
 }

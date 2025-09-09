@@ -13,6 +13,8 @@
       </div>
       <div style="flex: 1; position: relative;">
         <div style="position: relative; width: 100%; height: 100%;">
+          <!-- Action Panel: absolutely positioned inside the canvas area -->
+          <workflow-action-panel (request)="onActionPanelEvent($event)"></workflow-action-panel>
           <f-flow fDraggable [fFlowId]="viewModel.key"
                   (fLoaded)="onLoaded()"
                   (fCreateConnection)="onCreateConnection($event)"

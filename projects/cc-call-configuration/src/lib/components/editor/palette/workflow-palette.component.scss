@@ -1,3 +1,39 @@
+// Palette search bar styles
+.palette-search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 0 12px;
+}
+.palette-search-input {
+  flex: 1 1 auto;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--gray10);
+  padding: 6px 10px;
+  outline: none;
+  background: var(--gray14);
+  transition: border 0.18s;
+}
+.palette-search-input:focus {
+  border: 1.5px solid var(--blue5);
+}
+.palette-search-clear {
+  font-size: 18px;
+  padding: 0 8px;
+  border-radius: 4px;
+  min-width: 32px;
+  min-height: 32px;
+  background: var(--gray11);
+  color: var(--gray5);
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.palette-search-clear:hover, .palette-search-clear:focus {
+  background: var(--blue10);
+  color: var(--blue3);
+}
 // Increased width for better right margin for step names
 :host {
   width: 260px;

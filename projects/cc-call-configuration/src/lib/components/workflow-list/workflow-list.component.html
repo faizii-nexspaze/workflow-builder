@@ -1,33 +1,39 @@
 <div class="sidebar-container" [class.collapsed]="collapsed">
   <div class="sidebar-content" *ngIf="!collapsed">
     <header>
-      <div class="sidebar-hamburger" (click)="toggleSidebar()">
+      <div class="sidebar-hamburger" (click)="toggleSidebar()" aria-label="Toggle Sidebar" tabindex="0">
         <mat-icon>menu</mat-icon>
       </div>
-      <input class="toolbar-search" [formControl]="searchControl" placeholder="Type in to search...">
-      <button icon-button (click)="onCreate()">add</button>
+      <input class="toolbar-search text-sm rounded px-2" [formControl]="searchControl" placeholder="Type in to search..." aria-label="Search Workflows" />
+      <button class="btn btn-primary rounded ms-2" (click)="onCreate()" aria-label="Add Workflow">
+        <mat-icon>add</mat-icon>
+      </button>
     </header>
     <div class="list">
       <ng-container *ngFor="let item of filteredEntities; trackBy: trackByKey">
-        <div class="explorer-panel-item" [routerLink]="item.key" routerLinkActive="active">
-          <span>{{ item.name }}</span>
+  <div class="explorer-panel-item py-1 px-2 rounded d-flex align-items-center" [routerLink]="item.key" routerLinkActive="active" tabindex="0" [attr.aria-label]="'Open ' + item.name">
+          <span class="text-sm fw-medium">{{ item.name }}</span>
           <div class="flex-space"></div>
-          <button icon-button (click)="onDelete(item, $event)">delete</button>
+          <button class="btn btn-danger btn-sm rounded ms-2" (click)="onDelete(item, $event)" [attr.aria-label]="'Delete ' + item.name">
+            <mat-icon>delete</mat-icon>
+          </button>
         </div>
       </ng-container>
+      <div *ngIf="filteredEntities.length === 0" class="text-xs text-center text-muted mt-2">No workflows found.</div>
     </div>
   </div>
   <div class="collapsed-top" *ngIf="collapsed">
-    <div class="sidebar-hamburger collapsed-only" (click)="toggleSidebar()">
+    <div class="sidebar-hamburger collapsed-only" (click)="toggleSidebar()" tabindex="0" [attr.aria-label]="'Expand sidebar'">
       <mat-icon>menu</mat-icon>
     </div>
     <div class="collapsed-list">
       <ng-container *ngFor="let item of filteredEntities; let idx = index; trackBy: trackByKey">
-        <button class="collapsed-workflow-icon" [routerLink]="item.key" routerLinkActive="active">W{{ idx + 1 }}</button>
+        <button class="collapsed-workflow-icon rounded fw-medium text-xs mb-1" [routerLink]="item.key" routerLinkActive="active" tabindex="0" [attr.aria-label]="'Open ' + item.name">W{{ idx + 1 }}</button>
       </ng-container>
+      <div *ngIf="filteredEntities.length === 0" class="text-xs text-center text-muted mt-2">No workflows</div>
     </div>
     <div class="collapsed-add-btn-container">
-      <button class="collapsed-add-btn" (click)="onCreate()" aria-label="Add Workflow">+</button>
+      <button class="collapsed-add-btn rounded btn btn-primary" (click)="onCreate()" tabindex="0" [attr.aria-label]="'Add Workflow'">+</button>
     </div>
   </div>
   <workflow-create [show]="showCreateModal" (closed)="onModalClosed()" (created)="onModalCreated($event)"></workflow-create>

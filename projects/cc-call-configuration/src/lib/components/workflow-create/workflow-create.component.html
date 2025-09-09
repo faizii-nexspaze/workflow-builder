@@ -2,27 +2,27 @@
   <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Create Workflow</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+        <h5 class="modal-title fw-bold text-lg">Create Workflow</h5>
+        <button type="button" class="btn-close" [attr.aria-label]="'Close'" (click)="close()"></button>
       </div>
-  <form #workflowForm="ngForm" (ngSubmit)="submit(workflowForm)" autocomplete="off">
+      <form #workflowForm="ngForm" (ngSubmit)="submit(workflowForm)" autocomplete="off">
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label">Workflow Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="name" [(ngModel)]="workflow.name" required placeholder="Enter workflow name" />
+            <label class="form-label fw-medium text-sm mb-1" for="workflow-name">Workflow Name <span class="text-danger">*</span></label>
+            <input id="workflow-name" type="text" class="form-control text-md rounded" name="name" [(ngModel)]="workflow.name" required placeholder="Enter workflow name" aria-required="true" />
           </div>
           <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" name="description" [(ngModel)]="workflow.description" rows="2" placeholder="Enter description"></textarea>
+            <label class="form-label fw-medium text-sm mb-1" for="workflow-description">Description</label>
+            <textarea id="workflow-description" class="form-control text-md rounded" name="description" [(ngModel)]="workflow.description" rows="2" placeholder="Enter description"></textarea>
           </div>
           <div class="mb-3">
-            <label class="form-label">Version <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="version" [(ngModel)]="workflow.version" required placeholder="e.g. 1.0.0" />
+            <label class="form-label fw-medium text-sm mb-1" for="workflow-version">Version <span class="text-danger">*</span></label>
+            <input id="workflow-version" type="text" class="form-control text-md rounded" name="version" [(ngModel)]="workflow.version" required placeholder="e.g. 1.0.0" aria-required="true" />
           </div>
         </div>
         <div class="modal-footer justify-content-end gap-2">
-          <button type="submit" class="btn btn-primary px-4" [disabled]="!workflowForm.form.valid">Create</button>
-          <button type="button" class="btn btn-secondary px-4" (click)="close()">Cancel</button>
+          <button type="submit" class="btn btn-primary px-4 fw-medium" [disabled]="!workflowForm.form.valid" [attr.aria-disabled]="!workflowForm.form.valid">Create</button>
+          <button type="button" class="btn btn-secondary px-4 fw-medium" (click)="close()">Cancel</button>
         </div>
       </form>
     </div>

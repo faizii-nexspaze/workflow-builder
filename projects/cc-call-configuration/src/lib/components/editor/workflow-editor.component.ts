@@ -36,7 +36,8 @@ import { PreloaderService } from '../../../../../../src/app/preloader.service'; 
     FormsModule,
     WorkflowNodeComponent,
     WorkflowSidebarComponent,
-    WorkflowPaletteComponent
+    WorkflowPaletteComponent,
+    WorkflowActionPanelComponent
   ]
 })
 export class WorkflowEditorComponent implements OnInit, OnDestroy {

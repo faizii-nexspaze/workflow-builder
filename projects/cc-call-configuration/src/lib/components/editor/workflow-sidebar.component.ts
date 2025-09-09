@@ -5,68 +5,75 @@ import { NgIf, NgFor } from '@angular/common';
 @Component({
   selector: 'workflow-sidebar',
   standalone: true,
-  imports: [NgIf, NgFor, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   template: `
     <div style="width: 100%; background: #f7f7f7; border-left: 1px solid #e0e0e0; display: flex; flex-direction: column; height: 100%;">
-      <div style="padding: 20px 20px 10px 20px; height: 100%; display: flex; flex-direction: column;">
-        <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 18px 16px 12px 16px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 12px;">
-          <div style="font-size: 18px; font-weight: 600; color: #1976d2; margin-bottom: 6px;">
+      <!-- Scrollable content area -->
+      <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 24px 20px 10px 20px; display: flex; flex-direction: column; gap: 18px;">
+        <!-- Workflow/Card Header -->
+        <div style="background: #fff; border-radius: 8px; box-shadow: var(--shadow); padding: 20px 18px 14px 18px; margin-bottom: 0; display: flex; flex-direction: column; gap: 10px;">
+          <div class="text-lg fw-bold" style="color: var(--blue3); margin-bottom: 4px; letter-spacing: 0.01em;">
             {{ workflowName || 'Workflow Name' }}
           </div>
-          <div style="font-size: 14px; color: #555; min-height: 32px;">
+          <div class="text-sm fw-normal" style="color: var(--gray5); min-height: 32px;">
             {{ workflowDescription || 'Workflow description will appear here.' }}
           </div>
           @if (typeof stepNodeId === 'string' && stepNodeId) {
-            <button (click)="deleteStep.emit(stepNodeId!)" style="margin-top: 8px; align-self: flex-end; background: #e53935; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; font-size: 14px; cursor: pointer;">Delete</button>
+            <button (click)="deleteStep.emit(stepNodeId!)" class="btn btn-danger mt-2 ms-auto" aria-label="Delete Step">Delete</button>
           }
         </div>
-        <div *ngIf="stepNode" style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 18px 16px; margin-bottom: 18px;">
-          <div style="font-size: 16px; font-weight: 500; color: #333; margin-bottom: 8px;">Step Details</div>
-          <div *ngIf="getSchemaFields(stepNode.step_master?.input_schema).length > 0">
-            <div style="font-size: 14px; font-weight: 500; color: #1976d2; margin-bottom: 4px;">Input Schema</div>
-            <form [formGroup]="inputForm" (ngSubmit)="onSubmitInputForm()">
-              <div *ngFor="let field of getSchemaFields(stepNode.step_master?.input_schema)" style="margin-bottom: 12px;">
-                <label [for]="'input-' + field.name" style="display: block; font-size: 13px; color: #555; margin-bottom: 4px;">{{ field.name }}</label>
-                <input
-                  [id]="'input-' + field.name"
-                  [type]="field.type === 'number' ? 'number' : 'text'"
-                  [formControlName]="field.name"
-                  style="width: 100%; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
-                />
-              </div>
-              <button type="submit" style="background: #1976d2; color: #fff; border: none; border-radius: 4px; padding: 6px 18px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px;">Submit</button>
-            </form>
+        <!-- Step Details Card -->
+        @if (stepNode) {
+          <div style="background: #fff; border-radius: 8px; box-shadow: var(--shadow); padding: 20px 18px; margin-bottom: 0;">
+            <div class="text-md fw-medium mb-2" style="color: var(--gray3);">Step Details</div>
+            @if (getSchemaFields(stepNode.step_master?.input_schema).length > 0) {
+              <div class="text-sm fw-medium mb-1" style="color: var(--blue3);">Input Schema</div>
+              <form [formGroup]="inputForm" (ngSubmit)="onSubmitInputForm()" autocomplete="off">
+                @for (field of getSchemaFields(stepNode.step_master?.input_schema); track field.name) {
+                  <div class="mb-2">
+                    <label [for]="'input-' + field.name" class="text-xs fw-medium mb-1" style="color: var(--gray6);">{{ field.name }}</label>
+                    <input
+                      [id]="'input-' + field.name"
+                      [type]="field.type === 'number' ? 'number' : 'text'"
+                      [formControlName]="field.name"
+                      class="form-control text-sm rounded"
+                      style="width: 100%; padding: 6px 10px; border: 1px solid var(--gray10); background: var(--gray14);"
+                    />
+                  </div>
+                }
+                <button type="submit" class="btn btn-primary mt-2" aria-label="Submit Input">Submit</button>
+              </form>
+            }
+            @if (getSchemaFields(stepNode.step_master?.output_schema).length > 0) {
+              <div class="text-sm fw-medium mt-2 mb-1" style="color: var(--blue3);">Output Schema</div>
+              @for (field of getSchemaFields(stepNode.step_master?.output_schema); track field.name) {
+                <div class="d-flex align-items-center mb-1">
+                  <span class="text-xs" style="min-width: 110px; color: var(--gray6);">{{ field.name }}</span>
+                  <span class="rounded" style="background: var(--blue12); color: var(--blue3); padding: 2px 8px; font-size: 13px; margin-left: 8px;">{{ field.type }}</span>
+                </div>
+              }
+            }
           </div>
-          <div *ngIf="getSchemaFields(stepNode.step_master?.output_schema).length > 0">
-            <div style="font-size: 14px; font-weight: 500; color: #1976d2; margin-top: 12px; margin-bottom: 4px;">Output Schema</div>
-            <div *ngFor="let field of getSchemaFields(stepNode.step_master?.output_schema)">
-              <div style="display: flex; align-items: center; margin-bottom: 6px;">
-                <span style="min-width: 110px; color: #555;">{{ field.name }}</span>
-                <span style="background: #e3eafc; color: #1976d2; border-radius: 4px; padding: 2px 8px; font-size: 13px; margin-left: 8px;">{{ field.type }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 18px 16px; min-height: 120px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 15px;">
+        }
+        <!-- Log/Empty State Card -->
+        <div style="background: #fff; border-radius: 8px; box-shadow: var(--shadow); padding: 20px 18px; min-height: 120px; display: flex; align-items: center; justify-content: center; color: var(--gray8); font-size: 15px;">
           <div style="text-align: center; width: 100%;">
-            <div style="font-size: 22px; margin-bottom: 8px;">
-              <span style="opacity: 0.5;">🖥️</span>
-            </div>
+            <div class="text-xl mb-1" style="opacity: 0.5;">🖥️</div>
             <div>Live logs and workflow activity<br>will appear here in the future.</div>
           </div>
         </div>
-        <!-- Button group: always visible below log screen -->
-        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
-          <button style="background: #1976d2; color: #fff; border: none; border-radius: 4px; padding: 8px 22px; font-size: 15px; font-weight: 500; cursor: pointer;">Start</button>
-          @if (!isStopped) {
-            <button (click)="isStopped = true" style="background: #e53935; color: #fff; border: none; border-radius: 4px; padding: 8px 22px; font-size: 15px; font-weight: 500; cursor: pointer;">Stop</button>
-          } @else {
-            <button (click)="isStopped = false" style="background: #43a047; color: #fff; border: none; border-radius: 4px; padding: 8px 22px; font-size: 15px; font-weight: 500; cursor: pointer;">Continue</button>
-          }
-          <button style="background: #757575; color: #fff; border: none; border-radius: 4px; padding: 8px 22px; font-size: 15px; font-weight: 500; cursor: pointer;">Reset</button>
-        </div>
       </div>
-    </div>
+      <!-- Button group: always at the bottom, sticky for accessibility -->
+      <div style="display: flex; gap: 16px; justify-content: center; padding: 20px 0 20px 0; border-top: 1px solid #e0e0e0; background: #f7f7f7; position: sticky; bottom: 0; z-index: 2;">
+        <button class="btn btn-primary fw-medium text-md px-4" aria-label="Start Workflow" tabindex="0">Start</button>
+        @if (!isStopped) {
+          <button class="btn btn-danger fw-medium text-md px-4" (click)="isStopped = true" aria-label="Stop Workflow" tabindex="0">Stop</button>
+        } @else {
+          <button class="btn btn-primary fw-medium text-md px-4" (click)="isStopped = false" aria-label="Continue Workflow" tabindex="0">Continue</button>
+        }
+        <button class="btn btn-secondary fw-medium text-md px-4" aria-label="Reset Workflow" tabindex="0">Reset</button>
+      </div>
+  </div>
   `
 })
 export class WorkflowSidebarComponent implements OnChanges {

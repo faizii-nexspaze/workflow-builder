@@ -1,17 +1,28 @@
+<div class="palette-search-container">
+  <input
+    type="text"
+    class="form-control palette-search-input mb-2"
+    [(ngModel)]="searchText"
+    placeholder="Search by category or step..."
+    aria-label="Search by category or step"
+    autocomplete="off"
+  />
+  <button *ngIf="searchText" class="btn btn-sm btn-secondary palette-search-clear" (click)="clearSearch()" aria-label="Clear search">&times;</button>
+</div>
 <ng-container *ngIf="steps && steps.length">
-  <ng-container *ngFor="let category of categories">
+  <ng-container *ngFor="let category of filteredCategories">
     <div class="category-header" (click)="expandedCategories[category] = !expandedCategories[category]">
       <mat-icon>{{ expandedCategories[category] ? 'expand_less' : 'expand_more' }}</mat-icon>
       <span>{{ category }}</span>
     </div>
     <div class="category-steps" *ngIf="expandedCategories[category]">
       <ng-container *ngFor="let step of stepsByCategory(category)">
-  <button class="btn btn-outline-primary w-80 mb-2 text-start"
-    draggable="true"
-    (dragstart)="onDragStart($event, step)">
-    <i class="fa-solid fa-wrench me-2"></i>
-    {{ step.step_name }}
-  </button>
+        <button class="btn btn-outline-primary w-80 mb-2 text-start"
+          draggable="true"
+          (dragstart)="onDragStart($event, step)">
+          <i class="fa-solid fa-wrench me-2"></i>
+          {{ step.step_name }}
+        </button>
       </ng-container>
     </div>
   </ng-container>
