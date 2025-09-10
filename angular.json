@@ -34,7 +34,10 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/root/js/bundle.js",
+              "src/assets/root/js/scripts.js"
+            ]
           },
           "configurations": {
             "production": {

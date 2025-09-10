@@ -1,14 +1,21 @@
-<button icon-button (click)="onClick(eEventType.DELETE_SELECTED)" matTooltip="Delete" matTooltipPosition="below">delete</button>
 
-<button icon-button (click)="onClick(eEventType.SELECT_ALL)" matTooltip="Select All" matTooltipPosition="below">select_all</button>
-
-
-<button icon-button (click)="onClick(eEventType.ZOOM_IN)" matTooltip="Zoom In" matTooltipPosition="below">zoom_in</button>
-
-<button icon-button (click)="onClick(eEventType.ZOOM_OUT)" matTooltip="Zoom Out" matTooltipPosition="below">zoom_out</button>
-
-<button icon-button (click)="onClick(eEventType.FIT_TO_SCREEN)" matTooltip="Fit to Screen" matTooltipPosition="below">zoom_in_map</button>
-
-<button icon-button (click)="onClick(eEventType.ONE_TO_ONE)" matTooltip="1:1" matTooltipPosition="below">center_focus_strong</button>
+<button class="btn btn-icon btn-light btn-xs me-1" (click)="onClick(eEventType.DELETE_SELECTED)" matTooltip="Delete" matTooltipPosition="below">
+	<i class="fa-solid fa-trash"></i>
+</button>
+<button class="btn btn-icon btn-light btn-xs me-1" (click)="onClick(eEventType.SELECT_ALL)" matTooltip="Select All" matTooltipPosition="below">
+	<i class="fa-solid fa-check-circle"></i>
+</button>
+<button class="btn btn-icon btn-light btn-xs me-1" (click)="onClick(eEventType.ZOOM_IN)" matTooltip="Zoom In" matTooltipPosition="below">
+	<i class="fa-solid fa-magnifying-glass-plus"></i>
+</button>
+<button class="btn btn-icon btn-light btn-xs me-1" (click)="onClick(eEventType.ZOOM_OUT)" matTooltip="Zoom Out" matTooltipPosition="below">
+	<i class="fa-solid fa-magnifying-glass-minus"></i>
+</button>
+<button class="btn btn-icon btn-light btn-xs me-1" (click)="onClick(eEventType.FIT_TO_SCREEN)" matTooltip="Fit to Screen" matTooltipPosition="below">
+	<i class="fa-solid fa-expand"></i>
+</button>
+<button class="btn btn-icon btn-light btn-xs" (click)="onClick(eEventType.ONE_TO_ONE)" matTooltip="1:1" matTooltipPosition="below">
+	<i class="fa-solid fa-square"></i>
+</button>
 
 

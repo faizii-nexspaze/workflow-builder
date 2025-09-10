@@ -1,0 +1,5 @@
+@font-face {
+  font-family: 'Nioicon';
+  src: url('/assets/fonts/Nioicon.woff2') format('woff2'),
+       url('/assets/fonts/Nioicon.woff') format('woff');
+}
