@@ -1,30 +1,42 @@
+
+
+
 <div class="palette-search-container">
   <input
     type="text"
-    class="form-control palette-search-input mb-2"
+    class="palette-search-input"
     [(ngModel)]="searchText"
     placeholder="Search by category or step..."
     aria-label="Search by category or step"
     autocomplete="off"
   />
-  <button *ngIf="searchText" class="btn btn-sm btn-secondary palette-search-clear" (click)="clearSearch()" aria-label="Clear search">&times;</button>
+  <button *ngIf="searchText" class="palette-search-clear" (click)="clearSearch()" aria-label="Clear search"><i class="fa-solid fa-xmark"></i></button>
 </div>
-<ng-container *ngIf="steps && steps.length">
+
+<nav *ngIf="steps && steps.length" class="palette-nav nav flex-column">
   <ng-container *ngFor="let category of filteredCategories">
-    <div class="category-header" (click)="expandedCategories[category] = !expandedCategories[category]">
-      <mat-icon>{{ expandedCategories[category] ? 'expand_less' : 'expand_more' }}</mat-icon>
-      <span>{{ category }}</span>
-    </div>
-    <div class="category-steps" *ngIf="expandedCategories[category]">
-      <ng-container *ngFor="let step of stepsByCategory(category)">
-        <button class="btn btn-outline-primary w-80 mb-2 text-start"
-          draggable="true"
-          (dragstart)="onDragStart($event, step)">
-          <i class="fa-solid fa-wrench me-2"></i>
-          {{ step.step_name }}
-        </button>
-      </ng-container>
+    <div class="nav-item">
+  <a href="#" class="nav-link d-flex align-items-center justify-content-between palette-category-link"
+     [ngClass]="{'active': expandedCategories[category]}"
+     (click)="$event.preventDefault(); toggleCategory(category)">
+        <span class="d-flex align-items-center palette-category-label">
+          <em class="icon ni ni-layers"></em>
+          <span class="ms-2 palette-category-name">{{ category }}</span>
+        </span>
+        <em class="icon ni" [ngClass]="expandedCategories[category] ? 'ni-chevron-down' : 'ni-chevron-right'"></em>
+      </a>
+      <div *ngIf="expandedCategories[category]" class="palette-step-list nav flex-column">
+        <ng-container *ngFor="let step of stepsByCategory(category)">
+          <a href="#" class="palette-step-link"
+             draggable="true"
+             (dragstart)="onDragStart($event, step)"
+             style="user-select: none; cursor: grab; pointer-events: auto !important;">
+            <i class="fa-solid fa-code-branch icon"></i>
+            <span>{{ step.step_name }}</span>
+          </a>
+        </ng-container>
+      </div>
     </div>
   </ng-container>
-</ng-container>
+</nav>
 

@@ -1,21 +1,22 @@
-<div class="sidebar-container" [class.collapsed]="collapsed">
+
+<div class="sidebar-container dashlite-sidebar" [class.collapsed]="collapsed">
   <div class="sidebar-content" *ngIf="!collapsed">
-    <header>
-      <div class="sidebar-hamburger" (click)="toggleSidebar()" aria-label="Toggle Sidebar" tabindex="0">
-        <mat-icon>menu</mat-icon>
-      </div>
-      <input class="toolbar-search text-sm rounded px-2" [formControl]="searchControl" placeholder="Type in to search..." aria-label="Search Workflows" />
-      <button class="btn btn-primary rounded ms-2" (click)="onCreate()" aria-label="Add Workflow">
-        <mat-icon>add</mat-icon>
+    <header class="nk-sidebar-head d-flex align-items-center px-3 py-2 border-bottom bg-white">
+      <button class="btn sidebar-hamburger px-1 me-2" (click)="toggleSidebar()" aria-label="Toggle Sidebar" tabindex="0">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <input class="form-control form-control-sm nk-search-input me-2" [formControl]="searchControl" placeholder="Search workflows..." aria-label="Search Workflows" />
+      <button class="btn btn-icon btn-no-bg px-1" (click)="onCreate()" aria-label="Add Workflow">
+        <i class="fa-solid fa-plus text-primary"></i>
       </button>
     </header>
-    <div class="list">
+    <div class="list px-2 pt-2 pb-3 bg-white" style="min-height: 0;">
       <ng-container *ngFor="let item of filteredEntities; trackBy: trackByKey">
-  <div class="explorer-panel-item py-1 px-2 rounded d-flex align-items-center" [routerLink]="item.key" routerLinkActive="active" tabindex="0" [attr.aria-label]="'Open ' + item.name">
-          <span class="text-sm fw-medium">{{ item.name }}</span>
+        <div class="explorer-panel-item nk-sidebar-item d-flex align-items-center px-2 py-1 mb-1 rounded" [routerLink]="item.key" routerLinkActive="active" tabindex="0" [attr.aria-label]="'Open ' + item.name">
+          <span class="fw-medium text-base text-dark">{{ item.name }}</span>
           <div class="flex-space"></div>
-          <button class="btn btn-danger btn-sm rounded ms-2" (click)="onDelete(item, $event)" [attr.aria-label]="'Delete ' + item.name">
-            <mat-icon>delete</mat-icon>
+          <button class="btn btn-icon btn-danger btn-xs ms-2" (click)="onDelete(item, $event)" [attr.aria-label]="'Delete ' + item.name">
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </ng-container>
@@ -23,17 +24,17 @@
     </div>
   </div>
   <div class="collapsed-top" *ngIf="collapsed">
-    <div class="sidebar-hamburger collapsed-only" (click)="toggleSidebar()" tabindex="0" [attr.aria-label]="'Expand sidebar'">
-      <mat-icon>menu</mat-icon>
-    </div>
-    <div class="collapsed-list">
+    <button class="btn btn-icon btn-light collapsed-only mb-2" (click)="toggleSidebar()" tabindex="0" [attr.aria-label]="'Expand sidebar'">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="collapsed-list d-flex flex-column align-items-center mt-3 gap-2">
       <ng-container *ngFor="let item of filteredEntities; let idx = index; trackBy: trackByKey">
-        <button class="collapsed-workflow-icon rounded fw-medium text-xs mb-1" [routerLink]="item.key" routerLinkActive="active" tabindex="0" [attr.aria-label]="'Open ' + item.name">W{{ idx + 1 }}</button>
+        <button class="collapsed-workflow-icon btn btn-light btn-xs rounded-circle fw-medium text-xs mb-1" [routerLink]="item.key" routerLinkActive="active" tabindex="0" [attr.aria-label]="'Open ' + item.name">W{{ idx + 1 }}</button>
       </ng-container>
       <div *ngIf="filteredEntities.length === 0" class="text-xs text-center text-muted mt-2">No workflows</div>
     </div>
-    <div class="collapsed-add-btn-container">
-      <button class="collapsed-add-btn rounded btn btn-primary" (click)="onCreate()" tabindex="0" [attr.aria-label]="'Add Workflow'">+</button>
+    <div class="collapsed-add-btn-container mt-2">
+      <button class="collapsed-add-btn btn btn-primary btn-xs rounded-circle" (click)="onCreate()" tabindex="0" [attr.aria-label]="'Add Workflow'">+</button>
     </div>
   </div>
   <workflow-create [show]="showCreateModal" (closed)="onModalClosed()" (created)="onModalCreated($event)"></workflow-create>

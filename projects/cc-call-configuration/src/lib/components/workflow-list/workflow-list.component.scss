@@ -77,6 +77,24 @@
   background: transparent;
   border: none;
   z-index: 2;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.btn-no-bg {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.btn-no-bg:focus, .btn-no-bg:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.btn-no-bg .fa-plus {
+  color: var(--primary, #1976d2) !important;
+  font-size: 1.25rem;
 }
 .collapsed-top {
   display: flex;

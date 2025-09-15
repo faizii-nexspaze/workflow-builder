@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
-import { NgIf, NgFor } from '@angular/common';
+// Removed MatIcon import (not used in template)
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StepService, Step } from '@step-shared';
 import { Subscription } from 'rxjs';
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./workflow-palette.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIcon, NgIf, NgFor, FormsModule]
+  imports: [NgIf, NgFor, NgClass, FormsModule]
 })
 export class WorkflowPaletteComponent implements OnInit, OnDestroy {
   steps: Step[] = [];
@@ -50,6 +50,7 @@ export class WorkflowPaletteComponent implements OnInit, OnDestroy {
   onDragStart(event: DragEvent, step: Step) {
     event.dataTransfer?.setData('application/json', JSON.stringify(step));
     event.dataTransfer!.effectAllowed = 'copy';
+    console.log('[Palette] Drag started:', step);
   }
 
   clearSearch() {
@@ -58,6 +59,8 @@ export class WorkflowPaletteComponent implements OnInit, OnDestroy {
     this.expandedCategories = { ...this.prevExpandedCategories };
   }
 
+
+  
 
   // Watch searchText and auto-expand matching categories only when searching
   private autoExpandCategories() {
@@ -92,5 +95,13 @@ export class WorkflowPaletteComponent implements OnInit, OnDestroy {
     if (this.searchText.trim()) {
       this.autoExpandCategories();
     }
+  }
+
+  toggleCategory(category: string) {
+    // If not present, initialize as false, then toggle
+    if (typeof this.expandedCategories[category] === 'undefined') {
+      this.expandedCategories[category] = false;
+    }
+    this.expandedCategories[category] = !this.expandedCategories[category];
   }
 }

@@ -34,13 +34,67 @@ import { PreloaderService } from '../../../../../../src/app/preloader.service'; 
     CommonModule,
     FFlowModule,
     FormsModule,
-    WorkflowNodeComponent,
-    WorkflowSidebarComponent,
+  WorkflowNodeComponent,
+  WorkflowSidebarComponent,
     WorkflowPaletteComponent,
     WorkflowActionPanelComponent
   ]
 })
 export class WorkflowEditorComponent implements OnInit, OnDestroy {
+  // Handle dragover to allow drop on the flow area
+  public onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  // Handle drop to create a new step node at the drop position (on the flow area)
+  public onDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.viewModel) { return; }
+    const data = event.dataTransfer?.getData('application/json');
+    if (!data) { return; }
+    let step: any;
+    try {
+      step = JSON.parse(data);
+    } catch (e) {
+      return;
+    }
+    // Calculate drop position relative to the flow/canvas
+    // Try to find the canvas element
+    const canvasElem = (event.target as HTMLElement).closest('[fCanvas]') as HTMLElement;
+    let x = 100, y = 100;
+    if (canvasElem) {
+      const canvasRect = canvasElem.getBoundingClientRect();
+      x = event.clientX - canvasRect.left;
+      y = event.clientY - canvasRect.top;
+    }
+    // Debug log
+    console.log('[onDrop] Creating step node:', { step, x, y, workflowId: this.viewModel.key });
+    // Call service to create a new step node at this position
+    // Try to extract step_master_id from nested step_master object, fallback to id, step_master_id, or key
+    const stepMasterId = (step.step_master && step.step_master.step_id) || step.step_id || step.id || step.step_master_id || step.key;
+    const payload = {
+      step_master_id: stepMasterId,
+      step_node_label: step.step_name ? `node ${step.step_name}` : 'node',
+      position_x: x,
+      position_y: y,
+      step_node_config: {}
+    };
+    console.log('[onDrop] Payload for addStepToWorkflow:', payload);
+    this.stepService.addStepToWorkflow(this.viewModel.key, payload).subscribe({
+      next: (res) => {
+        console.log('[onDrop] Step node created successfully:', res);
+        // Reload workflow after node creation
+        this.hasChanges$.next();
+      },
+      error: (err) => {
+        console.error('[onDrop] Failed to create step node from drag-and-drop:', err);
+        alert('Failed to create step node.');
+      }
+    });
+  }
   // Handle delete step-node from sidebar
   public onDeleteStep(stepNodeId: string): void {
     if (!stepNodeId) return;

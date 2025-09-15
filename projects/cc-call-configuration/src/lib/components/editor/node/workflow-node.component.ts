@@ -73,6 +73,8 @@
       this.isBodyVisible = this.model?.isExpanded || false;
       this.subscription$ = this.subscribeToFormChanges();
     }
+    // ...restored original working code from user, enabling workflow node logic...
+    // Additional logic can be added here if necessary
 
     private subscribeToFormChanges(): Subscription {
       return this.form.valueChanges.subscribe((value: any) => {

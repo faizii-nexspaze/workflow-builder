@@ -30,4 +30,9 @@ export class WorkflowService {
   deleteWorkflow(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/workflow-builder/workflow/${id}`);
   }
+
+
+  getMasterSchemas(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/workflow-builder/workflow-template/schemas`);
+  }
 }

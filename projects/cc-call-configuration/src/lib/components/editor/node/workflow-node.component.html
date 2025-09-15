@@ -1,46 +1,49 @@
-<header fDragHandle>
+
+<header fDragHandle class="node-card p-2 pb-1 mb-0 bg-white rounded-3 shadow-sm">
   @if (model.input) {
     <div fNodeInput [fInputId]="model.input" [fInputConnectableSide]="eFConnectableSide.TOP"></div>
   }
-  <div class="node-header-row">
-    <mat-icon class="node-icon">{{ model.icon }}</mat-icon>
-    <div class="node-header-texts">
-      <span class="node-title">{{ model.name }}</span>
-      <span class="node-description">{{ model.description }}</span>
+  <div class="node-header-row d-flex align-items-center gap-2">
+  <i class="fa-solid fa-cube node-icon bg-light text-primary me-2"></i>
+    <div class="node-header-texts flex-grow-1">
+      <span class="node-title fw-bold text-dark">{{ model.name }}</span>
+      <span class="node-description text-xs text-muted">{{ model.description }}</span>
     </div>
     <div class="flex-space"></div>
     @if (model.isExpandable) {
-      <button class="toggle-body-button" [class.opened]="isBodyVisible"
+      <button class="btn btn-xs btn-light toggle-body-button ms-2" [class.opened]="isBodyVisible"
               (click)="onToggleBodyClick()">
-        <mat-icon>expand_more</mat-icon>
+        <em class="icon ni ni-chevron-down"></em>
       </button>
     }
   </div>
 </header>
 
-@if(isBodyVisible) {
-  <div class="node-body">
-    <div formBuilder [formControl]="form"></div>
 
+@if(isBodyVisible) {
+  <div class="node-body p-2 bg-light rounded-3 mt-1">
+    <div formBuilder [formControl]="form"></div>
     @for (output of model.outputs;track output.key) {
-      <div class="output-item">
-        <span>{{ output.name }}</span>
-        <div fNodeOutput [fOutputId]="output.key" [fOutputConnectableSide]="eFConnectableSide.RIGHT" [isSelfConnectable]="false" (click)="onRemoveConnection(output.key)">
-          <mat-icon>close</mat-icon>
+      <div class="output-item d-flex align-items-center gap-2 mb-1">
+        <span class="text-xs text-dark">{{ output.name }}</span>
+        <div fNodeOutput [fOutputId]="output.key" [fOutputConnectableSide]="eFConnectableSide.RIGHT" [isSelfConnectable]="false" (click)="onRemoveConnection(output.key)" class="btn btn-xs btn-light ms-2">
+          <em class="icon ni ni-cross text-danger"></em>
         </div>
       </div>
     }
   </div>
 }
 
+
 @if(!isBodyVisible) {
-  <footer style="display: flex; justify-content: center; align-items: flex-end; min-height: 24px;">
-    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="model.output ?? ''" [isSelfConnectable]="false" class="output-port-x"
+  <div class="output-port-wrapper">
+    <div fNodeOutput [fOutputConnectableSide]="eFConnectableSide.BOTTOM" [fOutputId]="model.output ?? ''" [isSelfConnectable]="false"
+         class="output-port-circular"
          (click)="onBottomOutputClick()">
       @if (hasOutgoingConnection) {
-        <span class="output-x-icon" (click)="onBottomOutputClick($event)">&#10005;</span>
+        <i class="fa-solid fa-xmark output-x-icon"></i>
       }
     </div>
-  </footer>
+  </div>
 }
 

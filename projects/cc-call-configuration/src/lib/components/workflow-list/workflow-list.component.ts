@@ -115,9 +115,9 @@ export class WorkflowListComponent implements OnInit, OnDestroy {
   }
 
   public onModalCreated(workflow: any): void {
-    // Here you will handle API integration later. For now, just close modal.
     this.showCreateModal = false;
-    // Optionally, you can trigger a refresh or show a message.
+    // Reload workflows to reflect the new workflow immediately
+    this.store.dispatch(new LoadWorkflowsAction());
   }
 
   public onDelete(entity: {

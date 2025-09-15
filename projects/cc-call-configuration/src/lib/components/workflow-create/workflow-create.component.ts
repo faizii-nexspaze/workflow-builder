@@ -44,13 +44,18 @@ export class WorkflowCreateComponent {
       };
       this.workflowService.createWorkflow(payload).subscribe({
         next: (response: any) => {
-          this.snackBar.open('Workflow created successfully!', 'Close', { duration: 3000 });
-          this.created.emit(response);
+          this.created.emit(response); // Parent will handle reload and toast
           this.close();
+          setTimeout(() => {
+            this.snackBar.open('Workflow created successfully!', 'Close', { duration: 3000 });
+          }, 100); // Show toast after modal closes
           this.loading = false;
         },
         error: (err: any) => {
-          this.snackBar.open('Failed to create workflow', 'Close', { duration: 3000 });
+          this.close();
+          setTimeout(() => {
+            this.snackBar.open('Failed to create workflow', 'Close', { duration: 3000 });
+          }, 100);
           this.loading = false;
         }
       });

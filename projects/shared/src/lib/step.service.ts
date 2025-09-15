@@ -119,4 +119,13 @@ export class StepService {
   deleteStepEdgeNode(stepEdgeId: string): Observable<any> {
     return this.http.delete(`${environment.apiBaseUrl}/workflow-builder/step-edge/edge/${stepEdgeId}`);
   }
+  // update step template schema for a step edge
+  updateStepTemplateSchema(stepTemplateId: string, data: any): Observable<any> {
+    return this.http.patch(`${environment.apiBaseUrl}/workflow-builder/workflow-template/step-template/${stepTemplateId}/append-schema`, data);
+  }
+
+  //get step details by step_template_id
+  getStepDetailsByStepTemplateId( data: any): Observable<any> {
+    return this.http.post(`${environment.apiBaseUrl}/workflow-builder/workflow-template/step-template/get-step-info`, data);
+  }
 }

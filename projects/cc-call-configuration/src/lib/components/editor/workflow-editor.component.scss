@@ -1,3 +1,12 @@
+// Ensure palette and canvas are always interactive
+.palette-step-link {
+  user-select: none;
+  cursor: grab;
+  pointer-events: auto !important;
+}
+f-canvas, .f-canvas {
+  pointer-events: auto !important;
+}
 :host {
   position: relative;
   display: block;
